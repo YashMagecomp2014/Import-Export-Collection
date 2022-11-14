@@ -59,7 +59,6 @@ class IECollectionController extends Controller
             ]);
         }
         
-  
 
         foreach ($collection as $items) {
 
