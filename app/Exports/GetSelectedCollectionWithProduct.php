@@ -35,7 +35,10 @@ class GetSelectedCollectionWithProduct implements FromCollection, WithHeadings
                   id
                   title
                   handle
-                  
+                  seo { 
+                    description
+                    title
+                 }
                 }
               }
             }

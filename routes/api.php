@@ -29,6 +29,8 @@ Route::get('/getcsv', [CollectionController::class, 'exportcsv']);
 Route::get('/getallcollection', [CollectionController::class, 'getallcollection']);
 Route::get('/getsmartcollection', [CollectionController::class, 'getsmartcollection']);
 Route::get('/getcustomcollection', [CollectionController::class, 'getcustomcollection']);
+
+// Export file
 Route::post('/GetSelectedCollections', [CollectionController::class, 'GetSelectedCollections']);
 Route::post('/GetSelectedCollectionsWithProducts', [CollectionController::class, 'GetSelectedCollectionsWithProducts']);
 
@@ -36,8 +38,9 @@ Route::post('/GetSelectedCollectionsWithProducts', [CollectionController::class,
 //maatwebsite
 Route::get('file-import-export', [IECollectionController::class, 'fileImportExport']);
 Route::post('file-import', [IECollectionController::class, 'fileImport'])->name('file-import');
-Route::get('file-export', [IECollectionController::class, 'fileExport'])->name('file-export');
 
+// Export file
+Route::get('file-export', [IECollectionController::class, 'fileExport'])->name('file-export');
 Route::get('fileExportwithproduct', [IECollectionController::class, 'fileExportwithproduct'])->name('fileExportwithproduct');
 Route::get('GetAllProduct', [IECollectionController::class, 'GetAllProduct'])->name('GetAllProduct');
 Route::get('GetAllProductNotInAnyCollection', [IECollectionController::class, 'GetAllProductNotInAnyCollection'])->name('GetAllProductNotInAnyCollection');

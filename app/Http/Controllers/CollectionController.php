@@ -64,7 +64,7 @@ class CollectionController extends Controller
         curl_setopt($ch, CURLOPT_URL, 'https://' . $shopurl . '/admin/api/2022-10/graphql.json');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, "{\n\"query\": \"query { collections(first: 50) { edges { node { id title handle updatedAt productsCount sortOrder } } } }\"\n}");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, "{\n\"query\": \"query { collections(first: 50) { edges { node { id title handle updatedAt productsCount sortOrder seo { description title } } } } }\"\n}");
 
         $headers = array();
         $headers[] = 'Content-Type: application/json';
@@ -79,9 +79,13 @@ class CollectionController extends Controller
 
         $response = json_decode($result, true);
         $collections = $response['data']['collections']['edges'];
+
+        
         foreach ($collections as $data) {            
             $collection[] = $data['node'];
+
         }
+       
         return $collection;
     }
 
@@ -97,6 +101,10 @@ class CollectionController extends Controller
                 updatedAt
                 productsCount
                 sortOrder
+                seo {
+                    description
+                    title
+                  }
               }
             }
           }

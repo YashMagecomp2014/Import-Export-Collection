@@ -173,6 +173,9 @@ class IECollectionController extends Controller
        
         if (isset($rows['rules']) && $rows['rules']) {
 
+            // print_r($rows);
+            // exit;
+
             $rules = explode(' ', $rows['rules']);
 
             if (!array_key_exists(1, $rules)) {
@@ -194,7 +197,15 @@ class IECollectionController extends Controller
                 "input" => [
                     "title" => $rows['title'],
                     'handle' => $rows['handle'],
-                    "descriptionHtml" => "View <b>every</b> shoe available in our store.",
+                    "descriptionHtml" => $rows['body_html'],
+                    'image' => [
+                        'src' => $rows['image'],
+                        'altText' => "logo-".$rows['title'],
+                    ],
+                    "seo" => [
+                        "description" => $rows['seo_description'],
+                        "title" => $rows['seo_title']
+                    ],
                     "ruleSet" => [
                         "appliedDisjunctively" => $rows['disjunctive'],
                         "rules" => [
@@ -213,6 +224,14 @@ class IECollectionController extends Controller
                     "title" => $rows['title'],
                     'handle' => $rows['handle'],
                     "descriptionHtml" => "View <b>every</b> shoe available in our store.",
+                    'image' => [
+                        'src' => $rows['image'],
+                        'altText' => "logo-school",
+                    ],
+                    "seo" => [
+                        "description" => $rows['seo_description'],
+                        "title" => $rows['seo_title']
+                    ],
                 ],
             ];
 
@@ -228,6 +247,14 @@ class IECollectionController extends Controller
               descriptionHtml
               handle
               sortOrder
+              image {
+                src
+                altText
+              }
+              seo {
+                description
+                title
+              }
               ruleSet {
                 appliedDisjunctively
                 rules {
@@ -258,6 +285,36 @@ class IECollectionController extends Controller
                 return $returnResponse;
             }
             $cid = $collectionid['data']['collectionCreate']['collection']['id'];
+
+
+            // $variable = [
+            //     "id" => $cid,
+            //     "input" => [
+            //       "publicationId" => "gid://shopify/Publication/75112448305"
+            //     ]
+            //     ];
+
+            //     $query = 'mutation publishablePublish(
+            //         $id: ID!, 
+            //         $input: [PublicationInput!]!) {
+            //         publishablePublish(id: $id, input: $input) {
+            //           userErrors {
+            //             field
+            //             message
+            //           }
+            //         }
+            //       }';
+
+
+            //       $finalquery = [
+            //         "query" => $query,
+            //         "variables" => $variable,
+            //     ];
+
+            //     $publsished = $this->curls($finalquery, $shopurl);
+
+            //     info($publsished);
+    
 
             if (isset($rows['product_handles']) && $rows['product_handles']) {
                 foreach ($rows['product_handles'] as $handle) {
@@ -347,6 +404,14 @@ class IECollectionController extends Controller
                     "title" => $rows['title'],
                     'handle' => $rows['handle'],
                     "descriptionHtml" => "View <b>every</b> shoe available in our store.",
+                    'image' => [
+                        'src' => $rows['image'],
+                        'altText' => "logo-school",
+                    ],
+                    "seo" => [
+                        "description" => $rows['seo_description'],
+                        "title" => $rows['seo_title']
+                    ],
                     "ruleSet" => [
                         "appliedDisjunctively" => $rows['disjunctive'],
                         "rules" => [
@@ -370,7 +435,14 @@ class IECollectionController extends Controller
             title
             descriptionHtml
             handle
-            sortOrder
+            image {
+                src
+                altText
+              }
+            seo{
+                title
+                description
+            }
             ruleSet {
                 appliedDisjunctively
                 rules {
