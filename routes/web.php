@@ -63,7 +63,7 @@ Route::get('/login', function (Request $request) {
     $installUrl = OAuth::begin(
         $shop,
         '/auth/callback',
-        true,
+        false,
         ['App\Lib\CookieHandler', 'saveShopifyCookie'],
     );
 

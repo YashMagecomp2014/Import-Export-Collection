@@ -1,18 +1,27 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Redirect} from "@shopify/app-bridge/actions";
-import {authenticatedFetch} from "@shopify/app-bridge-utils"
-import {ApolloClient, HttpLink, InMemoryCache} from '@apollo/client';
-import {ApolloProvider} from '@apollo/client/react';
-import {AppProvider} from "@shopify/polaris";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min';
+import { Redirect } from "@shopify/app-bridge/actions";
+import { authenticatedFetch } from "@shopify/app-bridge-utils"
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client';
+import { ApolloProvider } from '@apollo/client/react';
+import { AppProvider } from "@shopify/polaris";
 import translations from "@shopify/polaris/locales/en.json";
 import '@shopify/polaris/dist/styles.css';
 import PageLayout from "./components/PageLayout";
-import ProductsPage from "./components/ProductsPage";
-import {Provider, useAppBridge} from '@shopify/app-bridge-react';
-import {BrowserRouter, Route, Switch} from "react-router-dom";
+import CollectionList from "./components/CollectionList";
+import { Provider, useAppBridge } from '@shopify/app-bridge-react';
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 import ClientRouter from "./components/ClientRouter";
 import AppNavigation from "./components/AppNavigation";
+import './app.css';
+import GetAllcollection from './components/GetAllcollection';
+import HistoryList from './components/HistoryList';
+import GetAutocollection from './components/GetAutocollection';
+import GetManualcollection from './components/GetManualcollection';
+import { appconfig } from './config/config';
+import Dropdown from './components/Dropdown';
 
 function userLoggedInFetch(app) {
     const fetchFunction = authenticatedFetch(app);
@@ -32,7 +41,7 @@ function userLoggedInFetch(app) {
     };
 }
 
-function AppBridgeApolloProvider({children}) {
+function AppBridgeApolloProvider({ children }) {
     const app = useAppBridge();
     const client = new ApolloClient({
         link: new HttpLink({
@@ -49,30 +58,24 @@ function AppBridgeApolloProvider({children}) {
         </ApolloProvider>
     );
 }
-
 function ExamplePage() {
     return <div>Example Page</div>
 }
-function App({shop, host, apiKey}) {
-    const config = {apiKey: apiKey, shopOrigin: shop, host: host, forceRedirect: true};
+function App({ shop, host, apiKey }) {
+    const config = { apiKey: apiKey, shopOrigin: shop, host: host, forceRedirect: true };
 
     return (
-        <BrowserRouter>
-            <Provider config={config}>
-                <ClientRouter/>
-                <AppProvider i18n={translations}>
-                    <AppBridgeApolloProvider>
-                        <AppNavigation/>
-                        <PageLayout>
-                            <Switch>
-                                <Route path="/example" component={ExamplePage}/>
-                                <Route path="/" component={ProductsPage}/>
-                            </Switch>
-                        </PageLayout>
-                    </AppBridgeApolloProvider>
-                </AppProvider>
-            </Provider>
-        </BrowserRouter>
+        <AppProvider i18n={translations}>
+            <BrowserRouter>
+                <Dropdown />
+                <div className="container" id='container2'>
+                    <div className="row" id='row2'>
+                        <h1 id="collection">Collections</h1>
+                        <CollectionList />
+                    </div>
+                </div>
+            </BrowserRouter>
+        </AppProvider>
     );
 }
 
@@ -80,5 +83,5 @@ export default App;
 
 let appElement = document.getElementById('app');
 if (appElement) {
-    ReactDOM.render(<App {...(appElement.dataset)}/>, appElement);
+    ReactDOM.render(<App {...(appElement.dataset)} />, appElement);
 }

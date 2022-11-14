@@ -1,0 +1,2 @@
+Title,Body (HTML),Handle,Rules,Products,Disjunctive,Sort Order,Template Suffix,Published
+Collection Title,,Add a Handle if you want otherwise leave blank,Add Rules like(variant_price less_than 10000),Add Product Handle,,"Sort order must be one of: manual, best-selling, alpha-asc, alpha-desc, price-desc, price-asc, created-desc, created",,

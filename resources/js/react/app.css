@@ -1,0 +1,130 @@
+.hidden {
+    display: none;
+}
+
+#dropzone {
+    color: #ccc;
+    background-color: #fff;
+    width: 300px;
+    border-radius: 10px;
+    border: 3px dashed #ccc;
+    margin: 20px;
+    padding: 50px;
+    text-align: center;
+    cursor: pointer;
+}
+
+#dropzone:hover {
+    background-color: #fff;
+    color: #bbb;
+    border-color: #bbb;
+}
+
+#dropzone.full {
+    background-color: #54e592;
+    color: #fff;
+    border-color: #27ae60;
+}
+#file{
+    display: none;
+}
+
+#Submitbtn {
+    float: right;
+    padding: 3%;
+    width: 100%;
+}
+
+.row {
+    padding: 1%;
+}
+
+#maindropdown {
+    padding-top: 9%;
+    background: #fff;
+    padding-bottom: 2%;
+    border-radius: 20px
+}
+
+#maindropdownselect {
+    line-height: 30px;
+    font-size: 15px;
+}
+
+#maindropdownbtn {
+    line-height: 30px;
+    font-size: 15px;
+    width: 100%;
+}
+
+#container1 {
+    padding-top: 2%;
+}
+
+#container2 {
+    padding-top: 4%;
+}
+
+#row2 {
+    padding: 2%;
+    background: #fff;
+    border-radius: 20px
+}
+
+#mainnav .nav-link {
+    display: block;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 12%), 0 1px 2px rgb(0 0 0 / 24%);
+    padding: 10%;
+}
+
+#collection {
+    font-size: 25px;
+    padding: 4%;
+    padding-left: 3%;
+}
+
+.formbold-mb-5 {
+    margin-bottom: 20px;
+  }
+  .formbold-file-input input {
+    opacity: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  }
+
+  .formbold-file-input label {
+    position: relative;
+    border: 3px dashed #e0e0e0;
+    border-radius: 6px;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px;
+    text-align: center;
+  }
+  .formbold-drop-file {
+    display: block;
+    font-weight: 600;
+    color: #000;
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+
+  .formbold-or {
+    font-weight: 500;
+    font-size: 16px;
+    color: #000;
+    display: block;
+    margin-bottom: 8px;
+  }
+  .formbold-browse {
+    font-weight: 500;
+    font-size: 16px;
+    color: #000;
+    display: inline-block;
+    padding: 8px 28px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+  }
