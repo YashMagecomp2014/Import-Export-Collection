@@ -58,13 +58,12 @@ class IECollectionController extends Controller
                 ],
             ]);
         }
-        
 
         foreach ($collection as $items) {
 
             foreach ($items as $item) {
 
-                if (!array_key_exists('title', $item) || !array_key_exists('body_html', $item) || !array_key_exists('handle', $item) || !array_key_exists('image', $item) || !array_key_exists('rules', $item) || !array_key_exists('products', $item) || !array_key_exists('disjunctive', $item) || !array_key_exists('sort_order', $item) || !array_key_exists('template_suffix', $item) || !array_key_exists('published', $item)) {
+                if (!array_key_exists('title', $item) || !array_key_exists('body_html', $item) || !array_key_exists('handle', $item) || !array_key_exists('rules', $item) || !array_key_exists('products', $item) || !array_key_exists('disjunctive', $item) || !array_key_exists('sort_order', $item) || !array_key_exists('template_suffix', $item) || !array_key_exists('published', $item)) {
 
                     $isError = true;
                     $returnResponse["error"] = [];
@@ -161,8 +160,17 @@ class IECollectionController extends Controller
     public function collection($rows, $shopurl, $data)
     {
 
-        // print_r($rows);
-        // exit;
+        if ($rows['sort_order'] != 'manual' && $rows['sort_order'] != 'best-selling' && $rows['sort_order'] != 'alpha-asc' && $rows['sort_order'] != 'alpha-desc' && $rows['sort_order'] != 'price-desc' && $rows['sort_order'] != 'price-asc' && $rows['sort_order'] != 'created-desc' && $rows['sort_order'] != 'created') {
+
+            $isError = true;
+            $returnResponse["error"] = [];
+            $returnResponse["error"][] = $rows['title'] ." Sort order must be one of: manual, best-selling, alpha-asc, alpha-desc, price-desc, price-asc, created-desc, created";
+            $returnResponse["is_error"] = true;
+
+            return $returnResponse;
+
+        }
+       
         if (isset($rows['rules']) && $rows['rules']) {
 
             $rules = explode(' ', $rows['rules']);
