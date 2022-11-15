@@ -29,6 +29,14 @@ class GetSelectedCollectionWithProduct implements FromCollection, WithHeadings
             handle
             title
             descriptionHtml
+            sortOrder
+            image{
+                src
+            }
+            seo{
+                description
+                title
+            }
             products(first: 10) {
               edges {
                 node {
@@ -90,19 +98,17 @@ class GetSelectedCollectionWithProduct implements FromCollection, WithHeadings
                 if ($key == 0) {
                     $arrofcsv[] = array(
                         "title" => $collection['title'],
-                        'Body (HTML)' => '',
+                        'Body (HTML)' => $collection['descriptionHtml'],
                         "handle" => $collection['handle'],
-                        'Image' => '',
+                        'Image' => $collection['image'],
                         'Rules' => '',
                         "products" => $handle['handle'],
                         'Disjunctive' => '',
-                        'Sort Order' => '',
-                        'Template' => '',
-                        'Suffix' => '',
-                        'Published' => '',
-                        'SEO' => '',
-                        'Title' => '',
-                        'SEO Description' => '',
+                        'Sort Order' => $collection['sortOrder'],
+                        'Template Suffix' => '',
+                        'Published' => 'true',
+                        'SEO Title' => $collection['seo']['title'],
+                        'SEO Description' => $collection['seo']['description'],
 
                     );
 
@@ -147,11 +153,9 @@ class GetSelectedCollectionWithProduct implements FromCollection, WithHeadings
             'Products',
             'Disjunctive',
             'Sort Order',
-            'Template',
-            'Suffix',
+            'Template Suffix',
             'Published',
-            'SEO',
-            'Title',
+            'SEO Title',
             'SEO Description',
 
         ];

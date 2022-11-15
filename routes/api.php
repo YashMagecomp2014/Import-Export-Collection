@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\IECollectionController;
+use App\Http\Controllers\PlanController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -44,3 +45,7 @@ Route::get('file-export', [IECollectionController::class, 'fileExport'])->name('
 Route::get('fileExportwithproduct', [IECollectionController::class, 'fileExportwithproduct'])->name('fileExportwithproduct');
 Route::get('GetAllProduct', [IECollectionController::class, 'GetAllProduct'])->name('GetAllProduct');
 Route::get('GetAllProductNotInAnyCollection', [IECollectionController::class, 'GetAllProductNotInAnyCollection'])->name('GetAllProductNotInAnyCollection');
+
+
+//Plan
+Route::get('SubscriptionPlan', [PlanController::class, 'PlanCreation'])->name('SubscriptionPlan');

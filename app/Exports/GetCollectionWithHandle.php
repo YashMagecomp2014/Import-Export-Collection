@@ -25,12 +25,19 @@ class GetCollectionWithHandle implements FromCollection, WithHeadings
               edges {
                 cursor
                 node {
-                  id
                   title
+                  descriptionHtml
                   handle
                   updatedAt
                   sortOrder
-                  products(first: 80){
+                  image {
+                    src
+                  }
+                  seo { 
+                    description 
+                    title
+                   }
+                  products(first: 10){
                     edges{
                       cursor
                       node{
@@ -84,19 +91,17 @@ class GetCollectionWithHandle implements FromCollection, WithHeadings
                 if ($key == 0) {
                     $arrofcsv[] = array(
                         "title" => $collection['title'],
-                        'Body (HTML)' => '',
+                        'Body (HTML)' => $collection['descriptionHtml'],
                         "handle" => $collection['handle'],
-                        'Image' => '',
+                        'Image' => $collection['image'],
                         'Rules' => '',
                         "products" => $handle['handle'],
                         'Disjunctive' => '',
                         'Sort Order' => $collection['sortOrder'],
-                        'Template' => '',
-                        'Suffix' => '',
-                        'Published' => '',
-                        'SEO' => '',
-                        'Title' => '',
-                        'SEO Description' => '',
+                        'Template Suffix' => '',
+                        'Published' => 'true',
+                        'SEO Title' => $collection['seo']['title'],
+                        'SEO Description' => $collection['seo']['description'],
 
                     );
 
@@ -110,11 +115,9 @@ class GetCollectionWithHandle implements FromCollection, WithHeadings
                         "products" => $handle['handle'],
                         'Disjunctive' => '',
                         'Sort Order' => '',
-                        'Template' => '',
-                        'Suffix' => '',
+                        'Template Suffix' => '',
                         'Published' => '',
-                        'SEO' => '',
-                        'Title' => '',
+                        'SEO Title' => '',
                         'SEO Description' => '',
 
                     );
@@ -141,11 +144,9 @@ class GetCollectionWithHandle implements FromCollection, WithHeadings
             'Products',
             'Disjunctive',
             'Sort Order',
-            'Template',
-            'Suffix',
+            'Template Suffix',
             'Published',
-            'SEO',
-            'Title',
+            'SEO Title',
             'SEO Description',
 
         ];

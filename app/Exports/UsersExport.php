@@ -31,7 +31,7 @@ class UsersExport implements FromCollection, WithHeadings
         curl_setopt($ch, CURLOPT_URL, 'https://' . $this->shopurl . '/admin/api/2022-10/graphql.json');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, "{\n\"query\": \"query { collections(first: 50) { edges { node { id title handle updatedAt productsCount sortOrder seo { description title } } } } }\"\n}");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, "{\n\"query\": \"query { collections(first: 10) { edges { node { id title handle updatedAt productsCount sortOrder seo { description title } } } } }\"\n}");
 
         $headers = array();
         $headers[] = 'Content-Type: application/json';
@@ -53,8 +53,7 @@ class UsersExport implements FromCollection, WithHeadings
             $collection = $data['node'];
 
             $arrofcsv[] = array(
-                'Product Id' => $collection['id'],
-                'Product Title' => $collection['title'],
+                'Title' => $collection['title'],
                 'Handle' => $collection['handle'],
                 'updatedAt' => $collection['updatedAt'],
                 'productsCount' => $collection['productsCount'],
@@ -76,12 +75,16 @@ class UsersExport implements FromCollection, WithHeadings
     public function headings(): array
     {
         return [
-            'id',
             'Title',
-            'handle',
-            'updatedAt',
-            'productsCount',
-            'sortOrder',
+            'Body (HTML)',
+            'Handle',
+            'Image',
+            'Rules',
+            'Products',
+            'Disjunctive',
+            'Sort Order',
+            'Template Suffix',
+            'Published',
             'SEO Title',
             'SEO Description',
         ];

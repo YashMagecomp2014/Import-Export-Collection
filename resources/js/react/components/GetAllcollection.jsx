@@ -17,7 +17,7 @@ import { Toast, Frame } from '@shopify/polaris';
 function GetAllcollection({setselectvalue}) {
   const [collections, setUsers] = useState([]);
   const [rowSelection, setRowSelection] = useState([]);
-  const [active, setActive] = useState(true);
+  const [active, setActive] = useState(false);
   const [progress, setProgress] = useState(true);
   const [toastactive, setToastActive] = useState(false);
 

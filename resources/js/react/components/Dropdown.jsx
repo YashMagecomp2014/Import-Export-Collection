@@ -60,6 +60,7 @@ function Dropdown() {
 
   return (
     <div className="container" id="container1">
+       
       <div className="row" id="maindropdown">
         <div className="col-lg-3"></div>
         <div className="col-lg-4">
@@ -74,7 +75,11 @@ function Dropdown() {
         <div className="col-lg-2">
           <button className="btn btn-success" id="maindropdownbtn" onClick={fetchData}>Export</button>
         </div>
-        <div className="col-lg-3"></div>
+        <div className="col-lg-3" id="plan">
+          <h1 className="headingtrial">You are in trial</h1>
+          <li><p className="trialtext">You are in trial mode and limited to importing/exporting 5 collections to test the app. Please Upgrade to Pro to unlock unlimited collections.</p></li>
+          <button className="planbutton">Upgrade to pro at $19.99 / mo</button> 
+       </div>
 
       </div>
       {active && <Frame><Toast content="Import File Started" onDismiss={toggleActive} /></Frame>}

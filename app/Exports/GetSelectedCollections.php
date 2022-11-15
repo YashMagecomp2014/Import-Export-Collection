@@ -27,12 +27,17 @@ class GetSelectedCollections implements FromCollection, WithHeadings
             nodes(ids: [' . $this->id . ']) {
               id
               ... on Collection {
-                id
-                handle
                 title
-                updatedAt
-                productsCount
+                handle
+                descriptionHtml
                 sortOrder
+                image{
+                    src
+                }
+                seo{
+                    description
+                    title
+                }
               }
             }
           }
@@ -62,27 +67,54 @@ class GetSelectedCollections implements FromCollection, WithHeadings
         curl_close($ch);
 
         $response = json_decode($result, true);
+
+        // info($response);
         $collections = $response['data']['nodes'];
 
         // $data = $collections;
         foreach ($collections as $data) {
 
-            $collection[] = $data;
+            $collection = $data;
+
+            info($collection);
+
+            $arrofcsv[] = array(
+                "title" => $collection['title'],
+                'Body (HTML)' => $collection['descriptionHtml'],
+                "handle" => $collection['handle'],
+                'Image' => $collection['image'],
+                'Rules' => '',
+                "products" => '',
+                'Disjunctive' => '',
+                'Sort Order' => $collection['sortOrder'],
+                'Template Suffix' => '',
+                'Published' => 'true',
+                'SEO Title' => $collection['seo']['title'],
+                'SEO Description' => $collection['seo']['description'],
+
+            );
 
         }
-        $collectiondata = collect($collection);
+        
+        $collectiondata = collect($arrofcsv);
 
         return $collectiondata;
     }
     public function headings(): array
     {
         return [
-            'id',
-            'handle',
             'Title',
-            'updatedAt',
-            'productsCount',
-            'sortOrder',
+            'Body (HTML)',
+            'Handle',
+            'Image',
+            'Rules',
+            'Products',
+            'Disjunctive',
+            'Sort Order',
+            'Template Suffix',
+            'Published',
+            'SEO Title',
+            'SEO Description',
 
         ];
     }

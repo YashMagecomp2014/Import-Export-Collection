@@ -127,6 +127,23 @@ class IECollectionController extends Controller
                 }
             }
         }
+        $plan = "free";
+        if (count($mainData) > 10 && $plan == "free") {
+            $isError = true;
+            $returnResponse["error"] = [];
+            $returnResponse["error"][] = "You have insert Only 10 Collection";
+            $returnResponse["is_error"] = true;
+            $data->errors = $returnResponse["error"];
+            $data->save();
+            return response()->json([
+                "status" => 200,
+                "data" => [
+                    'success' => "",
+                    "errors" => "You have insert Only 10 Collection",
+                ],
+            ]);
+
+        }
 
         $shopurl = $request->header('url');
         $errorMessages = [];
@@ -164,33 +181,43 @@ class IECollectionController extends Controller
 
             $isError = true;
             $returnResponse["error"] = [];
-            $returnResponse["error"][] = $rows['title'] ." Sort order must be one of: manual, best-selling, alpha-asc, alpha-desc, price-desc, price-asc, created-desc, created";
+            $returnResponse["error"][] = $rows['title'] . " Sort order must be one of: manual, best-selling, alpha-asc, alpha-desc, price-desc, price-asc, created-desc, created";
             $returnResponse["is_error"] = true;
 
             return $returnResponse;
 
         }
-       
+
         if (isset($rows['rules']) && $rows['rules']) {
 
-            // print_r($rows);
-            // exit;
+            $rule = [];
+            $rules = explode(',', $rows['rules']);
 
-            $rules = explode(' ', $rows['rules']);
+            foreach ($rules as $ruledata) {
 
-            if (!array_key_exists(1, $rules)) {
+                $lastrules = explode(' ', $ruledata);
 
-                $data->errors = $rows['title'] . 'Please insert valid Rules';
-                $data->save();
-                $isError = true;
-                $returnResponse["error"] = [];
-                $returnResponse["error"][] = $rows['title'] . 'Please insert valid Rules';
-                $returnResponse["is_error"] = true;
+                if (!array_key_exists(1, $lastrules)) {
 
-                return $returnResponse;
+                    $data->errors = $rows['title'] . 'Please insert valid Rules';
+                    $data->save();
+                    $isError = true;
+                    $returnResponse["error"] = [];
+                    $returnResponse["error"][] = $rows['title'] . 'Please insert valid Rules';
+                    $returnResponse["is_error"] = true;
 
-                $rules[1] = '';
-                $rules[2] = '';
+                    return $returnResponse;
+
+                    $lastrules[1] = '';
+                    $lastrules[2] = '';
+                }
+
+                $rule[] = [
+                    'column' => strtoupper($lastrules[0]),
+                    'relation' => strtoupper($lastrules[1]),
+                    'condition' => strtoupper($lastrules[2]),
+                ];
+
             }
 
             $variable = [
@@ -198,42 +225,64 @@ class IECollectionController extends Controller
                     "title" => $rows['title'],
                     'handle' => $rows['handle'],
                     "descriptionHtml" => $rows['body_html'],
-                    'image' => [
-                        'src' => $rows['image'],
-                        'altText' => "logo-".$rows['title'],
-                    ],
+
+                    
                     "seo" => [
                         "description" => $rows['seo_description'],
-                        "title" => $rows['seo_title']
+                        "title" => $rows['seo_title'],
                     ],
                     "ruleSet" => [
                         "appliedDisjunctively" => $rows['disjunctive'],
-                        "rules" => [
-                            "column" => strtoupper($rules[0]),
-                            "relation" => strtoupper($rules[1]),
-                            "condition" => strtoupper($rules[2]),
-                        ],
+                        "rules" => $rule,
                     ],
                 ],
             ];
 
+            if(isset($rows['image']) && !$rows['image'] == null){
+
+                $variable['input']['image'] = [
+                    
+                    'src' => $rows['image'],
+                    'altText' => "logo-school",
+                
+            ];
+            }
+            // print_r($variable);
+            // exit;
         } else if ($rows['products']) {
+
+            $plan = "free";
+            if (count($rows['product_handles']) > 10 && $plan == "free") {
+
+                $isError = true;
+                $returnResponse["error"] = [];
+
+                $returnResponse["error"][] = "you have insert only 10 products";
+
+                $returnResponse["is_error"] = true;
+                return $returnResponse;
+            }
 
             $variable = [
                 "input" => [
                     "title" => $rows['title'],
                     'handle' => $rows['handle'],
-                    "descriptionHtml" => "View <b>every</b> shoe available in our store.",
-                    'image' => [
-                        'src' => $rows['image'],
-                        'altText' => "logo-school",
-                    ],
+                    "descriptionHtml" => $rows['body_html'],
                     "seo" => [
                         "description" => $rows['seo_description'],
-                        "title" => $rows['seo_title']
+                        "title" => $rows['seo_title'],
                     ],
                 ],
             ];
+            if(isset($rows['image']) && !$rows['image'] == null){
+
+                $variable['input']['image'] = [
+                    
+                    'src' => $rows['image'],
+                    'altText' => "logo-school",
+                
+            ];
+            }
 
             $query = 'mutation CollectionCreate($input: CollectionInput!) {
             collectionCreate(input: $input) {
@@ -286,7 +335,6 @@ class IECollectionController extends Controller
             }
             $cid = $collectionid['data']['collectionCreate']['collection']['id'];
 
-
             // $variable = [
             //     "id" => $cid,
             //     "input" => [
@@ -295,7 +343,7 @@ class IECollectionController extends Controller
             //     ];
 
             //     $query = 'mutation publishablePublish(
-            //         $id: ID!, 
+            //         $id: ID!,
             //         $input: [PublicationInput!]!) {
             //         publishablePublish(id: $id, input: $input) {
             //           userErrors {
@@ -305,7 +353,6 @@ class IECollectionController extends Controller
             //         }
             //       }';
 
-
             //       $finalquery = [
             //         "query" => $query,
             //         "variables" => $variable,
@@ -314,7 +361,6 @@ class IECollectionController extends Controller
             //     $publsished = $this->curls($finalquery, $shopurl);
 
             //     info($publsished);
-    
 
             if (isset($rows['product_handles']) && $rows['product_handles']) {
                 foreach ($rows['product_handles'] as $handle) {
@@ -403,14 +449,10 @@ class IECollectionController extends Controller
                 "input" => [
                     "title" => $rows['title'],
                     'handle' => $rows['handle'],
-                    "descriptionHtml" => "View <b>every</b> shoe available in our store.",
-                    'image' => [
-                        'src' => $rows['image'],
-                        'altText' => "logo-school",
-                    ],
+                    "descriptionHtml" => $rows['body_html'],
                     "seo" => [
                         "description" => $rows['seo_description'],
-                        "title" => $rows['seo_title']
+                        "title" => $rows['seo_title'],
                     ],
                     "ruleSet" => [
                         "appliedDisjunctively" => $rows['disjunctive'],
@@ -422,6 +464,16 @@ class IECollectionController extends Controller
                     ],
                 ],
             ];
+
+            if(isset($rows['image']) && !$rows['image'] == null){
+
+                $variable['input']['image'] = [
+                    
+                    'src' => $rows['image'],
+                    'altText' => "logo-school",
+                
+            ];
+            }
         }
 
         $query = 'mutation CollectionCreate($input: CollectionInput!) {
@@ -446,9 +498,9 @@ class IECollectionController extends Controller
             ruleSet {
                 appliedDisjunctively
                 rules {
-                column
-                relation
-                condition
+                        column
+                        relation
+                        condition
                 }
             }
             }
@@ -461,6 +513,7 @@ class IECollectionController extends Controller
         ];
 
         $result = $this->curls($finalquery, $shopurl);
+
         $collectionid = json_decode($result, true);
 
         if (isset($collectionid['data']['collectionCreate']['userErrors']) && count($collectionid['data']['collectionCreate']['userErrors']) > 0) {

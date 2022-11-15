@@ -28,9 +28,9 @@ function CollectionList() {
   }
 
   const component = [
-    <GetAllcollection setselectvalue={setselectvalue}/>,
-    <GetManualcollection setselectvalue={setselectvalue}/>,
-    <GetAutocollection setselectvalue={setselectvalue}/>,
+    <GetAllcollection setselectvalue={setselectvalue} />,
+    <GetManualcollection setselectvalue={setselectvalue} />,
+    <GetAutocollection setselectvalue={setselectvalue} />,
     <HistoryList />,
   ]
 
@@ -69,14 +69,20 @@ function CollectionList() {
 
   return (
     <>
+      <Dropdown />
+      <div className="container" id='container2'>
+        <div className="row" id='row2'>
+          <h1 id="collection">Collections</h1>
 
-      <Card>
-        <Tabs tabs={tabs} selected={selected} onSelect={handleTabChange}>
-          <Card.Section >
-            {component[selected]}
-          </Card.Section>
-        </Tabs>
-      </Card>
+          <Card>
+            <Tabs tabs={tabs} selected={selected} onSelect={handleTabChange}>
+              <Card.Section >
+                {component[selected]}
+              </Card.Section>
+            </Tabs>
+          </Card>
+        </div>
+      </div>
     </>
   );
 }

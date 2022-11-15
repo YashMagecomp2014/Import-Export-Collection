@@ -67,13 +67,7 @@ function App({ shop, host, apiKey }) {
     return (
         <AppProvider i18n={translations}>
             <BrowserRouter>
-                <Dropdown />
-                <div className="container" id='container2'>
-                    <div className="row" id='row2'>
-                        <h1 id="collection">Collections</h1>
-                        <CollectionList />
-                    </div>
-                </div>
+                <CollectionList />
             </BrowserRouter>
         </AppProvider>
     );
