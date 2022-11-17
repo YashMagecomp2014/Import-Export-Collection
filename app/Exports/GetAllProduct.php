@@ -21,7 +21,7 @@ class GetAllProduct implements FromCollection, WithHeadings
     {
 
         $query = 'query {
-            products(first: 10) {
+            products(first: 100) {
               edges {
                 cursor
                 node {

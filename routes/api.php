@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ChargeController;
 use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\IECollectionController;
 use App\Http\Controllers\PlanController;
@@ -49,3 +50,4 @@ Route::get('GetAllProductNotInAnyCollection', [IECollectionController::class, 'G
 
 //Plan
 Route::get('SubscriptionPlan', [PlanController::class, 'PlanCreation'])->name('SubscriptionPlan');
+Route::get('getchargeid', [ChargeController::class, 'GetChargeID'])->name('getchargeid');

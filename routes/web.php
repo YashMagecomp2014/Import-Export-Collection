@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ChargeController;
 use App\Models\Session;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -38,6 +39,8 @@ Route::fallback(function (Request $request) {
     }
     return redirect("/login?shop=$shop");
 });
+
+Route::get('/charge-handle', [ChargeController::class, "chargeHandle"])->name('active.charge');
 
 Route::get('/login/toplevel', function (Request $request, Response $response) {
     $shop = Utils::sanitizeShopDomain($request->query('shop'));

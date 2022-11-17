@@ -6,16 +6,19 @@ use App\Exports\GetAllProductNotInAnyCollection;
 use App\Exports\GetCollectionWithHandle;
 use App\Exports\UsersExport;
 use App\Imports\UsersImport;
+use App\Models\Charge;
 use App\Models\Collection;
 use App\Models\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 
 class IECollectionController extends Controller
 {
     public function fileImport(Request $request)
     {
+        $shopurl = $request->header('url');
         $validator = Validator::make($request->file(), [
             'file' => 'required|mimes:csv,txt',
         ]);
@@ -39,6 +42,7 @@ class IECollectionController extends Controller
             $data['file'] = $filename;
             $data['path'] = 'public/file/' . $filename;
             $data['type'] = "Import file";
+            $data->shop = $shopurl;
         }
         $data->save();
 
@@ -59,27 +63,32 @@ class IECollectionController extends Controller
             ]);
         }
 
+        if (!array_key_exists('title', $collection[0][0]) || !array_key_exists('body_html', $collection[0][0]) || !array_key_exists('handle', $collection[0][0]) || !array_key_exists('rules', $collection[0][0]) || !array_key_exists('products', $collection[0][0]) || !array_key_exists('disjunctive', $collection[0][0]) || !array_key_exists('sort_order', $collection[0][0]) || !array_key_exists('template_suffix', $collection[0][0]) || !array_key_exists('published', $collection[0][0]) || !array_key_exists('seo_title', $collection[0][0]) || !array_key_exists('seo_description', $collection[0][0])) {
+            $isError = true;
+            $returnResponse["error"] = [];
+            $returnResponse["error"][] = "Please Follow Rules";
+            $returnResponse["is_error"] = true;
+            $data->errors = $returnResponse["error"];
+            $data->save();
+            return response()->json([
+                "status" => 200,
+                "data" => [
+                    'success' => "",
+                    "errors" => "Please Follow Rules",
+                ],
+            ]);
+        }
         foreach ($collection as $items) {
-
             foreach ($items as $item) {
+               if(!$item["title"] && $item['productid']) {
+                    $lastindex = array_key_last($mainData);
+                    if (isset($mainData[$lastindex]) && isset($mainData[$lastindex]['product_ids'])) {
+                        $mainData[$lastindex]['product_ids'][] = $item['productid'];
+                    } else {
+                        $mainData[$lastindex]['product_ids'] = [$item['productid']];
+                    }
 
-                if (!array_key_exists('title', $item) || !array_key_exists('body_html', $item) || !array_key_exists('handle', $item) || !array_key_exists('rules', $item) || !array_key_exists('products', $item) || !array_key_exists('disjunctive', $item) || !array_key_exists('sort_order', $item) || !array_key_exists('template_suffix', $item) || !array_key_exists('published', $item)) {
-
-                    $isError = true;
-                    $returnResponse["error"] = [];
-                    $returnResponse["error"][] = "Please Follow Rules";
-                    $returnResponse["is_error"] = true;
-                    $data->errors = $returnResponse["error"];
-                    $data->save();
-                    return response()->json([
-                        "status" => 200,
-                        "data" => [
-                            'success' => "",
-                            "errors" => "Please Follow Rules",
-                        ],
-                    ]);
-                }
-                if (!$item["title"] && $item['products']) {
+                } else if (!$item["title"] && $item['products']) {
                     $lastindex = array_key_last($mainData);
                     if (isset($mainData[$lastindex]) && isset($mainData[$lastindex]['product_handles'])) {
                         $mainData[$lastindex]['product_handles'][] = $item['products'];
@@ -87,7 +96,7 @@ class IECollectionController extends Controller
                         $mainData[$lastindex]['product_handles'] = [$item['products']];
                     }
 
-                } else {
+                }else {
 
                     if (isset($item['products'])) {
                         $item['product_handles'] = [$item['products']];
@@ -99,35 +108,47 @@ class IECollectionController extends Controller
 
                     $validator = Validator::make($items, [
                         'title' => 'required',
+                        'sort_order' => [
+                            'required',
+                            Rule::in(['manual', 'best-selling', 'alpha-asc', 'alpha-desc', 'price-desc', 'price-asc', 'created-desc', 'created']),
+                        ],
                     ]);
-                    if ($validator->fails()) {
-                        $isError = true;
-                        $returnResponse["error"] = [];
-                        $returnResponse["error"][] = 'Required Title';
-                        $returnResponse["is_error"] = true;
-                        $data->errors = $returnResponse["error"];
-                        $data->save();
-
-                        return response()->json($validator->errors());
-                    }
-                    $validator = Validator::make($items, [
-                        'sort_order' => 'required',
-                    ]);
-
-                    if ($validator->fails()) {
-                        $isError = true;
-                        $returnResponse["error"] = [];
-                        $returnResponse["error"][] = "Sort order must be one of: manual, best-selling, alpha-asc, alpha-desc, price-desc, price-asc, created-desc, created";
-                        $returnResponse["is_error"] = true;
-                        $data->errors = $returnResponse["error"];
-                        $data->save();
-
-                        return response()->json($validator->errors());
+                    $error = json_decode($validator->errors(), true);
+                    if (isset($error['sort_order']) && $error['sort_order']) {
+                        if ($validator->fails()) {
+                            $isError = true;
+                            $returnResponse["error"] = [];
+                            $returnResponse["error"][] = "Sort order must be one of: manual, best-selling, alpha-asc, alpha-desc, price-desc, price-asc, created-desc, created";
+                            $returnResponse["is_error"] = true;
+                            $data->errors = $returnResponse["error"];
+                            $data->save();
+                            return response()->json($validator->errors());
+                        }
+                    } else if (isset($error['title']) && $error['title']) {
+                        if ($validator->fails()) {
+                            $isError = true;
+                            $returnResponse["error"] = [];
+                            $returnResponse["error"][] = 'Required Title';
+                            $returnResponse["is_error"] = true;
+                            $data->errors = $returnResponse["error"];
+                            $data->save();
+                            return response()->json($validator->errors());
+                        }
                     }
                 }
             }
         }
-        $plan = "free";
+
+        return $mainData;
+
+        $chargedata = Charge::where('shop', $shopurl)->first('charge_id');
+
+        if (isset($chargedata->charge_id) && $chargedata->charge_id) {
+            $plan = "prime";
+        } else {
+            $plan = 'free';
+        }
+
         if (count($mainData) > 10 && $plan == "free") {
             $isError = true;
             $returnResponse["error"] = [];
@@ -142,13 +163,11 @@ class IECollectionController extends Controller
                     "errors" => "You have insert Only 10 Collection",
                 ],
             ]);
-
         }
 
-        $shopurl = $request->header('url');
         $errorMessages = [];
         foreach ($mainData as $rows) {
-            $result = self::collection($rows, $shopurl, $data);
+            $result = self::collection($rows, $shopurl);
             if (isset($result["is_error"]) && $result["is_error"]) {
                 $errorMessages[] = implode(", ", $result["error"]);
             }
@@ -174,22 +193,51 @@ class IECollectionController extends Controller
         }
     }
 
-    public function collection($rows, $shopurl, $data)
+    public function collection($rows, $shopurl)
     {
+       
+        if ($rows['products']) {
 
-        if ($rows['sort_order'] != 'manual' && $rows['sort_order'] != 'best-selling' && $rows['sort_order'] != 'alpha-asc' && $rows['sort_order'] != 'alpha-desc' && $rows['sort_order'] != 'price-desc' && $rows['sort_order'] != 'price-asc' && $rows['sort_order'] != 'created-desc' && $rows['sort_order'] != 'created') {
+            if (isset($rows['product_handles']) && $rows['product_handles']) {
+                foreach ($rows['product_handles'] as $handle) {
+                    $productbyhandle = [
+                        "handle" => $handle,
+                    ];
 
-            $isError = true;
-            $returnResponse["error"] = [];
-            $returnResponse["error"][] = $rows['title'] . " Sort order must be one of: manual, best-selling, alpha-asc, alpha-desc, price-desc, price-asc, created-desc, created";
-            $returnResponse["is_error"] = true;
+                    $productbyhandlequery = 'query getProductIdFromHandle($handle: String!) {
+        productByHandle(handle: $handle) {
+        id
+        }
+        }';
 
-            return $returnResponse;
+                    $finalquery = [
+                        "query" => $productbyhandlequery,
+                        "variables" => $productbyhandle,
+                    ];
 
+                    $result = $this->curls($finalquery, $shopurl);
+
+                    $productid = json_decode($result, true);
+
+                    $invalidhandle = $productid['data'];
+
+                    if ($invalidhandle['productByHandle'] == null) {
+
+                        $isError = true;
+                        $returnResponse["error"] = [];
+
+                        $returnResponse["error"][] = "Please insert valid product handle";
+
+                        $returnResponse["is_error"] = true;
+                        return $returnResponse;
+
+                    }
+                    $pid[] = $productid['data']['productByHandle']['id'];
+                }
+            }
         }
 
         if (isset($rows['rules']) && $rows['rules']) {
-
             $rule = [];
             $rules = explode(',', $rows['rules']);
 
@@ -197,10 +245,8 @@ class IECollectionController extends Controller
 
                 $lastrules = explode(' ', $ruledata);
 
-                if (!array_key_exists(1, $lastrules)) {
+                if (count($lastrules) < 3) {
 
-                    $data->errors = $rows['title'] . 'Please insert valid Rules';
-                    $data->save();
                     $isError = true;
                     $returnResponse["error"] = [];
                     $returnResponse["error"][] = $rows['title'] . 'Please insert valid Rules';
@@ -219,72 +265,58 @@ class IECollectionController extends Controller
                 ];
 
             }
+        }
 
-            $variable = [
-                "input" => [
-                    "title" => $rows['title'],
-                    'handle' => $rows['handle'],
-                    "descriptionHtml" => $rows['body_html'],
+       
+        $variable = [
+            "input" => [
+                "title" => $rows['title'],
+                'handle' => $rows['handle'],
+                "descriptionHtml" => $rows['body_html'],
+            ],
+        ];
 
-                    
-                    "seo" => [
-                        "description" => $rows['seo_description'],
-                        "title" => $rows['seo_title'],
-                    ],
-                    "ruleSet" => [
-                        "appliedDisjunctively" => $rows['disjunctive'],
-                        "rules" => $rule,
-                    ],
-                ],
+        if (isset($rows['product_handles']) && !$rows['product_handles'] == null) {
+           
+            $variable['input']['products'] = $pid;
+        }
+
+        if(!array_key_exists('product_ids', $rows)){
+            $variable['input']['products'] = [
+                $rows['productid']
             ];
+        }
+        if (isset($rows['product_ids']) && !$rows['product_ids'] == null) {
+           
+            $variable['input']['products'] = $rows['product_ids'];
+        }
 
-            if(isset($rows['image']) && !$rows['image'] == null){
+        if (isset($rule) && !$rule == null) {
 
-                $variable['input']['image'] = [
-                    
-                    'src' => $rows['image'],
-                    'altText' => "logo-school",
-                
+            $variable['input']['ruleSet'] = [
+                "appliedDisjunctively" => $rows['disjunctive'],
+                "rules" => $rule,
             ];
-            }
-            // print_r($variable);
-            // exit;
-        } else if ($rows['products']) {
+        }
+        if (isset($rows['seo']) && !$rows['seo'] == null) {
 
-            $plan = "free";
-            if (count($rows['product_handles']) > 10 && $plan == "free") {
-
-                $isError = true;
-                $returnResponse["error"] = [];
-
-                $returnResponse["error"][] = "you have insert only 10 products";
-
-                $returnResponse["is_error"] = true;
-                return $returnResponse;
-            }
-
-            $variable = [
-                "input" => [
-                    "title" => $rows['title'],
-                    'handle' => $rows['handle'],
-                    "descriptionHtml" => $rows['body_html'],
-                    "seo" => [
-                        "description" => $rows['seo_description'],
-                        "title" => $rows['seo_title'],
-                    ],
-                ],
+            $variable['input']['seo'] = [
+                "description" => $rows['seo_description'],
+                "title" => $rows['seo_title'],
             ];
-            if(isset($rows['image']) && !$rows['image'] == null){
+        }
+        if (isset($rows['image']) && !$rows['image'] == null) {
 
-                $variable['input']['image'] = [
-                    
-                    'src' => $rows['image'],
-                    'altText' => "logo-school",
-                
+            $variable['input']['image'] = [
+                'src' => $rows['image'],
+                'altText' => "logo-school",
             ];
-            }
+        }
 
-            $query = 'mutation CollectionCreate($input: CollectionInput!) {
+        // print_r($variable);
+        // exit;
+
+        $query = 'mutation CollectionCreate($input: CollectionInput!) {
             collectionCreate(input: $input) {
             userErrors {
               field
@@ -316,197 +348,6 @@ class IECollectionController extends Controller
             }
             }';
 
-            $finalquery = [
-                "query" => $query,
-                "variables" => $variable,
-            ];
-
-            $result = $this->curls($finalquery, $shopurl);
-
-            $collectionid = json_decode($result, true);
-            if (isset($collectionid['data']['collectionCreate']['userErrors']) && count($collectionid['data']['collectionCreate']['userErrors']) > 0) {
-                $isError = true;
-                $returnResponse["error"] = [];
-                foreach ($collectionid['data']['collectionCreate']['userErrors'] as $error) {
-                    $returnResponse["error"][] = $rows['handle'] . ' ' . $error['message'];
-                }
-                $returnResponse["is_error"] = true;
-                return $returnResponse;
-            }
-            $cid = $collectionid['data']['collectionCreate']['collection']['id'];
-
-            // $variable = [
-            //     "id" => $cid,
-            //     "input" => [
-            //       "publicationId" => "gid://shopify/Publication/75112448305"
-            //     ]
-            //     ];
-
-            //     $query = 'mutation publishablePublish(
-            //         $id: ID!,
-            //         $input: [PublicationInput!]!) {
-            //         publishablePublish(id: $id, input: $input) {
-            //           userErrors {
-            //             field
-            //             message
-            //           }
-            //         }
-            //       }';
-
-            //       $finalquery = [
-            //         "query" => $query,
-            //         "variables" => $variable,
-            //     ];
-
-            //     $publsished = $this->curls($finalquery, $shopurl);
-
-            //     info($publsished);
-
-            if (isset($rows['product_handles']) && $rows['product_handles']) {
-                foreach ($rows['product_handles'] as $handle) {
-                    $productbyhandle = [
-                        "handle" => $handle,
-                    ];
-
-                    $productbyhandlequery = 'query getProductIdFromHandle($handle: String!) {
-            productByHandle(handle: $handle) {
-            id
-            }
-            }';
-
-                    $finalquery = [
-                        "query" => $productbyhandlequery,
-                        "variables" => $productbyhandle,
-                    ];
-
-                    $result = $this->curls($finalquery, $shopurl);
-
-                    $productid = json_decode($result, true);
-
-                    $invalidhandle = $productid['data'];
-
-                    if ($invalidhandle['productByHandle'] == null) {
-
-                        $data->errors = "Please insert valid product handle";
-                        $data->save();
-
-                        $isError = true;
-                        $returnResponse["error"] = [];
-
-                        $returnResponse["error"][] = "Please insert valid product handle";
-
-                        $returnResponse["is_error"] = true;
-                        return $returnResponse;
-
-                    }
-                    $pid[] = $productid['data']['productByHandle']['id'];
-                }
-
-                //=====================***===============================
-                // Add Product using COLLECTIONID
-                //=====================***===============================
-
-                $collectionwithproduct = [
-                    "id" => $cid,
-                    "productIds" => [],
-                ];
-                foreach ($pid as $productid) {
-                    $collectionwithproduct['productIds'][] = $productid;
-                }
-                $querys = 'mutation collectionAddProducts($id: ID!, $productIds: [ID!]!) {
-            collectionAddProducts(id: $id, productIds: $productIds) {
-            collection {
-              id
-              title
-              productsCount
-              products(first: 10) {
-                nodes {
-                  id
-                  title
-                  handle
-                }
-              }
-            }
-            userErrors {
-              field
-              message
-            }
-            }
-            }';
-                $finalquery = [
-                    "query" => $querys,
-                    "variables" => $collectionwithproduct,
-                ];
-
-                return $this->curls($finalquery, $shopurl);
-            }
-
-        } else {
-
-            // print_r($rows);
-            // exit;
-            $variable = [
-                "input" => [
-                    "title" => $rows['title'],
-                    'handle' => $rows['handle'],
-                    "descriptionHtml" => $rows['body_html'],
-                    "seo" => [
-                        "description" => $rows['seo_description'],
-                        "title" => $rows['seo_title'],
-                    ],
-                    "ruleSet" => [
-                        "appliedDisjunctively" => $rows['disjunctive'],
-                        "rules" => [
-                            "column" => "TITLE",
-                            "relation" => "CONTAINS",
-                            "condition" => "shoe",
-                        ],
-                    ],
-                ],
-            ];
-
-            if(isset($rows['image']) && !$rows['image'] == null){
-
-                $variable['input']['image'] = [
-                    
-                    'src' => $rows['image'],
-                    'altText' => "logo-school",
-                
-            ];
-            }
-        }
-
-        $query = 'mutation CollectionCreate($input: CollectionInput!) {
-        collectionCreate(input: $input) {
-            userErrors {
-            field
-            message
-            }
-            collection {
-            id
-            title
-            descriptionHtml
-            handle
-            image {
-                src
-                altText
-              }
-            seo{
-                title
-                description
-            }
-            ruleSet {
-                appliedDisjunctively
-                rules {
-                        column
-                        relation
-                        condition
-                }
-            }
-            }
-        }
-        }';
-
         $finalquery = [
             "query" => $query,
             "variables" => $variable,
@@ -514,17 +355,10 @@ class IECollectionController extends Controller
 
         $result = $this->curls($finalquery, $shopurl);
 
-        $collectionid = json_decode($result, true);
+        $responce = json_encode($result);
 
-        if (isset($collectionid['data']['collectionCreate']['userErrors']) && count($collectionid['data']['collectionCreate']['userErrors']) > 0) {
-            $isError = true;
-            $returnResponse["error"] = [];
-            foreach ($collectionid['data']['collectionCreate']['userErrors'] as $error) {
-                $returnResponse["error"][] = $rows['handle'] . ' ' . $error['message'];
-            }
-            $returnResponse["is_error"] = true;
-            return $returnResponse;
-        }
+        return $responce;
+
     }
 
     public function curls($finalquery, $shopurl)
@@ -559,6 +393,7 @@ class IECollectionController extends Controller
         $data->file = 'Get-All-Collection.csv';
         $data->path = 'storage/Get-All-Collection.csv';
         $data->type = 'Export File All Collection';
+        $data->shop = $shopurl;
         $data->save();
 
         return response()->json([
@@ -576,6 +411,7 @@ class IECollectionController extends Controller
         $data->file = 'Get-All-Collection-with-Handle.csv';
         $data->path = 'storage/Get-All-Collection-with-Handle.csv';
         $data->type = 'Export File All Collection With Product';
+        $data->shop = $shopurl;
         $data->save();
 
         return response()->json([
@@ -592,6 +428,7 @@ class IECollectionController extends Controller
         $data->file = 'Get-All-Product.csv';
         $data->path = 'storage/Get-All-Product.csv';
         $data->type = 'Export File All Product';
+        $data->shop = $shopurl;
         $data->save();
 
         return response()->json([
@@ -609,6 +446,7 @@ class IECollectionController extends Controller
         $data->file = 'Get-Product-Not-In-Any-Collection.csv';
         $data->path = 'storage/Get-Product-Not-In-Any-Collection.csv';
         $data->type = 'Export File Products not in collection';
+        $data->shop = $shopurl;
         $data->save();
 
         return response()->json([

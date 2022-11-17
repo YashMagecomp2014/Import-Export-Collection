@@ -15,6 +15,7 @@ function HistoryList() {
   const [rowSelection, setRowSelection] = useState([]);
   const [progress, setProgress] = useState(true);
 
+  
   const onclick = () => {
     fetchData();
 

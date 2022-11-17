@@ -31,7 +31,7 @@ class UsersExport implements FromCollection, WithHeadings
         curl_setopt($ch, CURLOPT_URL, 'https://' . $this->shopurl . '/admin/api/2022-10/graphql.json');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, "{\n\"query\": \"query { collections(first: 10) { edges { node { id title handle updatedAt productsCount sortOrder seo { description title } } } } }\"\n}");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, "{\n\"query\": \"query { collections(first: 10) { edges { node { title handle descriptionHtml sortOrder image{ src } seo { description title } } } } }\"\n}");
 
         $headers = array();
         $headers[] = 'Content-Type: application/json';
@@ -53,15 +53,28 @@ class UsersExport implements FromCollection, WithHeadings
             $collection = $data['node'];
 
             $arrofcsv[] = array(
-                'Title' => $collection['title'],
-                'Handle' => $collection['handle'],
-                'updatedAt' => $collection['updatedAt'],
-                'productsCount' => $collection['productsCount'],
-                'sortOrder' => $collection['sortOrder'],
-                'seo Title' => $collection['seo']['title'],
-                'seo Description' => $collection['seo']['description'],
-    
+                "title" => $collection['title'],
+                'Body (HTML)' => $collection['descriptionHtml'],
+                "handle" => $collection['handle'],
+                'Rules' => '',
+                "products" => '',
+                'Disjunctive' => '',
+                'Sort Order' => $collection['sortOrder'],
+                'Template Suffix' => '',
+                'Published' => 'true',
+                'SEO Title' => $collection['seo']['title'],
+                'SEO Description' => $collection['seo']['description'],
+
             );
+
+            if(isset($collection['image']['src']) && $collection['image']['src']){
+                $arrofcsv = [
+                    'Image' => $collection['image'],
+                ];
+            }
+
+            print_r($arrofcsv);
+            exit;
 
         }
 

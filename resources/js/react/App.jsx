@@ -66,9 +66,11 @@ function App({ shop, host, apiKey }) {
 
     return (
         <AppProvider i18n={translations}>
-            <BrowserRouter>
-                <CollectionList />
-            </BrowserRouter>
+            <Provider config={config}>
+                <BrowserRouter>
+                    <CollectionList />
+                </BrowserRouter>
+            </Provider>
         </AppProvider>
     );
 }

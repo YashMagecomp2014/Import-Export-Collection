@@ -69,7 +69,7 @@ function CollectionList() {
 
   return (
     <>
-      <Dropdown />
+      <Dropdown setselectvalue={setselectvalue}/>
       <div className="container" id='container2'>
         <div className="row" id='row2'>
           <h1 id="collection">Collections</h1>

@@ -16,6 +16,9 @@ class CreateCollectionsTable extends Migration
         Schema::create('collections', function (Blueprint $table) {
             $table->id();
             $table->string('file')->nullable();
+            $table->string('path')->nullable();
+            $table->string('type')->nullable();
+            $table->string('errors', 2048)->nullable()->default('[]');
             $table->timestamps();
         });
     }
