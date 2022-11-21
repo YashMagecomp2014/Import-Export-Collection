@@ -49,7 +49,7 @@ class PlanController extends Controller
             "variables" => $variable,
         ];
 
-        $token = Session::where('shop', 'storelaravelapp.myshopify.com')->first('access_token');
+        $token = Session::where('shop', $shopName)->first('access_token');
 
         // print_r($token->access_token);
         // exit;
@@ -71,8 +71,6 @@ class PlanController extends Controller
             echo 'Error:' . curl_error($ch);
         }
         curl_close($ch);
-
-        info($result);
 
         $response = json_decode($result, true);
 

@@ -47,8 +47,15 @@ class UsersExport implements FromCollection, WithHeadings
         $response = json_decode($result, true);
         $collections = $response['data']['collections']['edges'];
 
+        // if(count($collections) == 0){
+
+        //     $error = "error";
+        //     return $error;
+        // }
         // $data = $collections;
         foreach ($collections as $data) {
+
+           
 
             $collection = $data['node'];
 
@@ -66,20 +73,15 @@ class UsersExport implements FromCollection, WithHeadings
                 'SEO Description' => $collection['seo']['description'],
 
             );
-
-            if(isset($collection['image']['src']) && $collection['image']['src']){
-                $arrofcsv = [
-                    'Image' => $collection['image'],
-                ];
-            }
-
-            print_r($arrofcsv);
-            exit;
-
+        
+            // if(isset($collection['image']['src']) && $collection['image']['src']){
+            //     $arrofcsv = [
+            //         'Image' => $collection['image'],
+            //     ];
+            // }
         }
 
-       
-        
+      
 
         $collectiondata = collect($arrofcsv);
 

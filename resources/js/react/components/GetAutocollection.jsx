@@ -12,9 +12,10 @@ import { Spinner } from '@shopify/polaris';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { IconButton, Tooltip } from '@mui/material';
 import { Toast, Frame } from '@shopify/polaris';
+import Swal from 'sweetalert2'
 
 
-function GetAllcollection({setselectvalue}) {
+function GetAllcollection({ setselectvalue }) {
   const [collections, setUsers] = useState([]);
   const [rowSelection, setRowSelection] = useState([]);
   const [active, setActive] = useState(true);
@@ -35,14 +36,23 @@ function GetAllcollection({setselectvalue}) {
 
     var data = new FormData();
     data.append("ids", result)
+
+    if(result.length == 0){
+      setToastActive(false);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error...',
+        text:'Please Select Collection',
+      })
+    }
     var res = await GlobalAPIcall('POST', '/GetSelectedCollections', data);
     setUsers(res);
     fetchData();
     setselectvalue();
-    
+
     setToastActive(false);
-    
-    
+
+
   };
 
   const handleExportedActions = async (e) => {
@@ -53,13 +63,22 @@ function GetAllcollection({setselectvalue}) {
 
     var data = new FormData();
     data.append("ids", result)
+    
+    if(result.length == 0){
+      setToastActive(false);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error...',
+        text:'Please Select Collection',
+      })
+    }
     var res = await GlobalAPIcall('POST', '/GetSelectedCollectionsWithProducts', data);
     setUsers(res);
     fetchData();
     setselectvalue();
-    
+
     setToastActive(false);
-    
+
   };
 
 
@@ -146,7 +165,7 @@ function GetAllcollection({setselectvalue}) {
       <div className="row">
 
         <div className="col-md-8">
-        {progress && <Spinner accessibilityLabel="Spinner example" size="large" />}
+          {progress && <Spinner accessibilityLabel="Spinner example" size="large" />}
           <MaterialReactTable
             columns={columns}
             data={collections}
@@ -187,9 +206,9 @@ function GetAllcollection({setselectvalue}) {
             }}
           />
         </div>
-        
-          <CollectionPage />
-        
+
+        <CollectionPage />
+
       </div>
       {toastactive && <Frame><Toast content="Export File Started" onDismiss={tosttoggleActive} /></Frame>}
 

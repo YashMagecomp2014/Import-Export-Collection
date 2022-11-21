@@ -12,6 +12,7 @@ import { Spinner } from '@shopify/polaris';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { IconButton, Tooltip } from '@mui/material';
 import { Toast, Frame } from '@shopify/polaris';
+import Swal from 'sweetalert2'
 
 
 function GetAllcollection({setselectvalue}) {
@@ -34,6 +35,14 @@ function GetAllcollection({setselectvalue}) {
 
     var data = new FormData();
     data.append("ids", result)
+    if(result.length == 0){
+      setToastActive(false);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error...',
+        text:'Please Select Collection',
+      })
+    }
     var res = await GlobalAPIcall('POST', '/GetSelectedCollections', data);
     setUsers(res);
     fetchData();
@@ -52,6 +61,14 @@ function GetAllcollection({setselectvalue}) {
 
     var data = new FormData();
     data.append("ids", result)
+    if(result.length == 0){
+      setToastActive(false);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error...',
+        text:'Please Select Collection',
+      })
+    }
     var res = await GlobalAPIcall('POST', '/GetSelectedCollectionsWithProducts', data);
     setUsers(res);
     fetchData();

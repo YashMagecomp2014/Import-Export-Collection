@@ -68,15 +68,12 @@ class GetSelectedCollections implements FromCollection, WithHeadings
 
         $response = json_decode($result, true);
 
-        // info($response);
         $collections = $response['data']['nodes'];
 
         // $data = $collections;
         foreach ($collections as $data) {
 
             $collection = $data;
-
-            info($collection);
 
             $arrofcsv[] = array(
                 "title" => $collection['title'],

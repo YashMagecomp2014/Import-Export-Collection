@@ -9,8 +9,6 @@ class ChargeController extends Controller
 {
     public function chargeHandle(Request $request)
     {
-        info($request->all());
-
         $data = new Charge();
         $data->shop = $request->shop;
         $data->charge_id = $request->charge_id;

@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Session extends Model
 {
     use HasFactory;
+
+    public function charge()
+    {
+        return $this->hasOne(Charge::class, 'shop', 'shop');
+    }
 }

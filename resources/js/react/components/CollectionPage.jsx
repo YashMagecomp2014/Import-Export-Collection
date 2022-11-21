@@ -9,6 +9,8 @@ import HistoryList from './HistoryList';
 import { Spinner } from '@shopify/polaris';
 import { Toast, Frame, Page, Button } from '@shopify/polaris';
 import { Banner } from '@shopify/polaris';
+import PopUp from './PopUp';
+import Swal from 'sweetalert2'
 
 function CollectionPage({ fetchData }) {
 
@@ -16,6 +18,7 @@ function CollectionPage({ fetchData }) {
   const [progress, setProgress] = useState(false);
   const [active, setActive] = useState(false);
   const [validation, setValidation] = useState(false);
+  const [popup, setPopup] = useState(false);
 
   const toggleActive = () => {
     setActive(false);
@@ -31,20 +34,36 @@ function CollectionPage({ fetchData }) {
     const data = new FormData(e.target);
 
     try {
-      var res = await GlobalAPIcall('POST', '/file-import', data)
+      var res = await GlobalAPIcall('POST', '/file-import-1', data)
 
       setProgress(false);
       setActive(false);
+      setFile("");
 
       if (res.file) {
         setValidation(true);
       }
-      // else if (res.title) {
-      //   alert(res.title[0]);
-      // }
-      // else if (res.data.errors) {
-      //   alert(res.data.errors[0]);
-      // }
+      else if (res.title) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error...',
+          text: res.title[0],
+        })
+      }
+      else if (res.sort_order) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error...',
+          text: res.sort_order[0],
+        })
+      }
+      else if (res.data.errors) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error...',
+          text: res.data.errors,
+        })
+      }
 
       fetchData();
       if (res.status === 200) {
@@ -81,6 +100,7 @@ function CollectionPage({ fetchData }) {
           <a href='public/Rules/Rules.csv'>Rules</a>
         </div>
       </div>
+      {popup && <PopUp>dghdgbbdjj</PopUp>}
       <form onSubmit={handleSubmit}>
         {/* <div id="dropzone">
           <span>Drop files here or click to select a file</span>

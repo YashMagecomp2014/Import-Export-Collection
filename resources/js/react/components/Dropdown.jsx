@@ -25,7 +25,6 @@ function Dropdown({setselectvalue}) {
   const chargedata = async () => {
     var res = await GlobalAPIcall('GET', '/getchargeid');
 
-    console.log(res.charge_id);
     if(res.charge_id){
       setShowPlan(false);
     }else{
@@ -43,17 +42,17 @@ function Dropdown({setselectvalue}) {
   }
 
   const fetchData = async () => {
-    setActive(true);
+   
 
     if (selectvalue == 'export_collection') {
-
+      setActive(true);
       var res = await GlobalAPIcall('GET', '/file-export');
       setUsers(res);
       setselectvalue();
       setActive(false);
 
     } else if (selectvalue == 'export_collection_with_product') {
-
+      setActive(true);
       var res = await GlobalAPIcall('GET', '/fileExportwithproduct');
       setUsers(res);
       setActive(false);
@@ -61,7 +60,7 @@ function Dropdown({setselectvalue}) {
 
     }
     else if (selectvalue == 'export_All_Product') {
-
+      setActive(true);
       var res = await GlobalAPIcall('GET', '/GetAllProduct');
       setUsers(res);
       setActive(false);
@@ -69,7 +68,7 @@ function Dropdown({setselectvalue}) {
 
     }
     else if (selectvalue == 'export_All_Product_Not_Any_Collection') {
-
+      setActive(true);
       var res = await GlobalAPIcall('GET', '/GetAllProductNotInAnyCollection');
       setUsers(res);
       setActive(false);

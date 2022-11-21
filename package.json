@@ -31,7 +31,8 @@
         "react": "^16.14.0",
         "react-bootstrap": "^2.5.0",
         "react-dom": "^16.14.0",
-        "react-router-dom": "^5.2.0"
+        "react-router-dom": "^5.2.0",
+        "sweetalert2": "^11.6.9"
     },
     "devDependencies": {
         "@pmmmwh/react-refresh-webpack-plugin": "^0.5.4",
