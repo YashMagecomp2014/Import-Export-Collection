@@ -123,13 +123,13 @@ class ImportCsvToShopify implements ShouldQueue
         //Maindata to Push collection function
         foreach ($mainData as $rows) {
             if (isset($rows['sort_order']) && $rows['sort_order']) {
-                $rows['sort_order'] = strtolower($rows['sort_order']);
+                $rows['sort_order'] = strtoupper($rows['sort_order']);
             }
             $validator = Validator::make($rows, [
                 'title' => 'required',
                 'sort_order' => [
                     'required',
-                    Rule::in(['manual', 'best-selling', 'alpha-asc', 'alpha-desc', 'price-desc', 'price-asc', 'created-desc', 'created']),
+                    Rule::in(['ALPHA_ASC', 'BEST_SELLING', 'CREATED', 'ALPHA_DESC', 'PRICE_ASC', 'PRICE_DESC', 'CREATED_DESC', 'MANUAL']),
                 ],
             ]);
             $error = json_decode($validator->errors(), true);
@@ -176,6 +176,7 @@ class ImportCsvToShopify implements ShouldQueue
 
     public function collection($rows, $shopurl)
     {
+        info($rows['sort_order']);
         //Rules Array Manage
         if (isset($rows['rules']) && $rows['rules']) {
             $rule = [];
@@ -209,6 +210,7 @@ class ImportCsvToShopify implements ShouldQueue
                 "title" => $rows['title'],
                 'handle' => $rows['handle'],
                 "descriptionHtml" => $rows['body_html'],
+                "sortOrder" => $rows['sort_order'],
             ],
         ];
 
@@ -240,6 +242,7 @@ class ImportCsvToShopify implements ShouldQueue
             ];
         }
 
+        info($variable);
         //Graphql CreateCollection Query
         $query = 'mutation CollectionCreate($input: CollectionInput!) {
             collectionCreate(input: $input) {
@@ -284,6 +287,7 @@ class ImportCsvToShopify implements ShouldQueue
 
         $responce = json_encode($result);
 
+        info($responce);
         return $responce;
 
     }

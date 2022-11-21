@@ -32,6 +32,11 @@ class GetAllProductNotInAnyCollection implements FromCollection, WithHeadings
                 productType
                 handle
                 tags
+                priceRange {
+                  maxVariantPrice {
+                    amount
+                  }
+                }
                 collections(first: 10) {
                   edges {
                     node {
@@ -85,11 +90,11 @@ class GetAllProductNotInAnyCollection implements FromCollection, WithHeadings
         // return $result;
         $products = $response['data']['products']['edges'];
 
-      
-
         foreach ($products as $data) {
 
             $product = $data['node'];
+
+            $price = $product['priceRange']['maxVariantPrice']['amount'];
 
             // print_r($product['collections']['edges']);
             // exit;
@@ -123,19 +128,15 @@ class GetAllProductNotInAnyCollection implements FromCollection, WithHeadings
                     'Handle' => $product['handle'],
                     'Product Tags' => $product['tags'],
                     'Variant Title' => $variantdata['title'],
-                    'Price' => '',
+                    'Price' => $price,
                     'SKU' => $variantdata['sku'],
                     'Option 1' => $variantdata['title'],
                     'Option 2' => '',
                     'Option 3' => '',
-
                 );
             }
-
         }
 
-        // print_r($product);
-        // exit;
         $productsdata = collect($arrofcsv);
 
         return $productsdata;
@@ -156,7 +157,6 @@ class GetAllProductNotInAnyCollection implements FromCollection, WithHeadings
             'Option 1',
             'Option 2',
             'Option 3',
-
         ];
     }
 }

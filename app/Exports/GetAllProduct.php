@@ -32,6 +32,11 @@ class GetAllProduct implements FromCollection, WithHeadings
                   productType
                   handle
                   tags
+                  priceRange {
+                    maxVariantPrice {
+                      amount
+                    }
+                  }
                   variants(first: 1) {
                     edges {
                       cursor
@@ -86,9 +91,8 @@ class GetAllProduct implements FromCollection, WithHeadings
 
                 $variantdata = ($data['node']);
 
-                // print_r($product);
-                // exit;
-
+                $price = $product['priceRange']['maxVariantPrice']['amount'];
+                
                 $arrofcsv[] = array(
                     'Product Id' => $product['id'],
                     'Product Title' => $product['title'],
@@ -98,7 +102,7 @@ class GetAllProduct implements FromCollection, WithHeadings
                     'Handle' => $product['handle'],
                     'Product Tags' => $product['tags'],
                     'Variant Title' => $variantdata['title'],
-                    'Price' => '',
+                    'Price' => $price,
                     'SKU' => $variantdata['sku'],
                     'Option 1' => $variantdata['title'],
                     'Option 2' => '',

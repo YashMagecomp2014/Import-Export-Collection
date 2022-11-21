@@ -75,11 +75,10 @@ class GetSelectedCollections implements FromCollection, WithHeadings
 
             $collection = $data;
 
-            $arrofcsv[] = array(
+            $array = array(
                 "title" => $collection['title'],
                 'Body (HTML)' => $collection['descriptionHtml'],
                 "handle" => $collection['handle'],
-                'Image' => $collection['image'],
                 'Rules' => '',
                 "products" => '',
                 'Disjunctive' => '',
@@ -90,6 +89,10 @@ class GetSelectedCollections implements FromCollection, WithHeadings
                 'SEO Description' => $collection['seo']['description'],
 
             );
+            if(isset($collection['image']['src']) && $collection['image']['src']){
+                $array['image'] = $collection['image']['src'];
+            }
+            $arrofcsv[] = $array;
 
         }
         
@@ -103,7 +106,6 @@ class GetSelectedCollections implements FromCollection, WithHeadings
             'Title',
             'Body (HTML)',
             'Handle',
-            'Image',
             'Rules',
             'Products',
             'Disjunctive',
@@ -112,7 +114,8 @@ class GetSelectedCollections implements FromCollection, WithHeadings
             'Published',
             'SEO Title',
             'SEO Description',
-
+            'Image',
+            
         ];
     }
 }

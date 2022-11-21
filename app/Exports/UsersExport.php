@@ -47,19 +47,11 @@ class UsersExport implements FromCollection, WithHeadings
         $response = json_decode($result, true);
         $collections = $response['data']['collections']['edges'];
 
-        // if(count($collections) == 0){
-
-        //     $error = "error";
-        //     return $error;
-        // }
-        // $data = $collections;
-        foreach ($collections as $data) {
-
-           
+        foreach ($collections as $data) {           
 
             $collection = $data['node'];
 
-            $arrofcsv[] = array(
+            $array = array(
                 "title" => $collection['title'],
                 'Body (HTML)' => $collection['descriptionHtml'],
                 "handle" => $collection['handle'],
@@ -74,17 +66,20 @@ class UsersExport implements FromCollection, WithHeadings
 
             );
         
-            // if(isset($collection['image']['src']) && $collection['image']['src']){
-            //     $arrofcsv = [
-            //         'Image' => $collection['image'],
-            //     ];
-            // }
+            if(isset($collection['image']['src']) && $collection['image']['src']){
+                $array['image'] = $collection['image']['src'];
+            }
+            $arrofcsv[] = $array;
+
+            
         }
 
       
 
         $collectiondata = collect($arrofcsv);
 
+        // print_r($arrofcsv);
+        // exit;
         return $collectiondata;
     }
     public function headings(): array
@@ -93,7 +88,6 @@ class UsersExport implements FromCollection, WithHeadings
             'Title',
             'Body (HTML)',
             'Handle',
-            'Image',
             'Rules',
             'Products',
             'Disjunctive',
@@ -102,6 +96,7 @@ class UsersExport implements FromCollection, WithHeadings
             'Published',
             'SEO Title',
             'SEO Description',
+            'Image',
         ];
     }
 }
