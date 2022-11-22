@@ -47,28 +47,13 @@ class GetSelectedCollections implements FromCollection, WithHeadings
             "query" => $query,
         ];
 
-        $token = Session::where('shop',$this->shopurl)->first('access_token');
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, 'https://'.$this->shopurl.'/admin/api/2022-10/graphql.json');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($body));
-
-        $headers = array();
-        $headers[] = 'Content-Type: application/json';
-        $headers[] = 'X-Shopify-Access-Token: '.$token->access_token.'';
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
-        $result = curl_exec($ch);
-        if (curl_errno($ch)) {
-            echo 'Error:' . curl_error($ch);
-        }
-        curl_close($ch);
+        $shop = $this->shopurl;
+        $result = (new Graphql($body))->curls($body, $shop);
 
         $response = json_decode($result, true);
 
         $collections = $response['data']['nodes'];
+
 
         // $data = $collections;
         foreach ($collections as $data) {
@@ -115,6 +100,7 @@ class GetSelectedCollections implements FromCollection, WithHeadings
             'SEO Title',
             'SEO Description',
             'Image',
+            'productid'
             
         ];
     }

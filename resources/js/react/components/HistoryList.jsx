@@ -103,6 +103,8 @@ function HistoryList() {
             getRowId={(row) => row.id}
             onRowSelectionChange={setRowSelection}
             state={{ rowSelection }}
+            enableGlobalFilter={false}
+            enableColumnFilter={false}
             renderTopToolbarCustomActions={() => (
               <Box sx={{ display: 'flex', gap: '1rem' }}>
                 <Tooltip arrow title="Refresh Data">

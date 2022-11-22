@@ -45,7 +45,7 @@ class CollectionController extends Controller
 
             // info($Collection->path);
             // exit;
-            // unlink($Collection->path);
+            unlink($Collection->path);
             // print_r($Collection->file);
             // exit;
             if ($Collection) {
@@ -196,16 +196,18 @@ class CollectionController extends Controller
     public function GetSelectedCollections(Request $request)
     {
 
+        
         $ids = $request->ids;
         $id = json_encode($ids);
         $finalid = str_replace(',', '","', $id);
         $shopurl = $request->header('url');
 
-        $collection = Excel::store(new GetSelectedCollections($shopurl, $finalid), 'public/'.$shopurl.'/Get-Selected-Collection.csv');
+        $time = time();
+        $collection = Excel::store(new GetSelectedCollections($shopurl, $finalid), 'public/'.$shopurl.'/' .$time. 'Get-Selected-Collection.csv');
 
         $data = new Collection();
-        $data->file = 'Get-Selected-Collection.csv';
-        $data->path = 'storage/'.$shopurl.'/Get-Selected-Collection.csv';
+        $data->file = $time. 'Get-Selected-Collection.csv';
+        $data->path = 'storage/'.$shopurl.'/' .$time. 'Get-Selected-Collection.csv';
         $data->type = 'Export File Selected Collection';
         $data->shop = $shopurl;
         $data->save();
@@ -219,17 +221,18 @@ class CollectionController extends Controller
 
     public function GetSelectedCollectionsWithProducts(Request $request)
     {
+        $time = time();
         $ids = $request->ids;
         $id = json_encode($ids);
         $finalid = str_replace(',', '","', $id);
 
         $shopurl = $request->header('url');
 
-        $collection = Excel::store(new GetSelectedCollectionWithProduct($shopurl, $finalid), 'public/'.$shopurl.'/Get-Selected-Collection-With-Product.csv');
+        $collection = Excel::store(new GetSelectedCollectionWithProduct($shopurl, $finalid), 'public/'.$shopurl.'/' .$time. 'Get-Selected-Collection-With-Product.csv');
 
         $data = new Collection();
-        $data->file = 'Get-Selected-Collection-With-Product.csv';
-        $data->path = 'storage/'.$shopurl.'/Get-Selected-Collection-With-Product.csv';
+        $data->file =  $time. 'Get-Selected-Collection-With-Product.csv';
+        $data->path = 'storage/'.$shopurl.'/' .$time. 'Get-Selected-Collection-With-Product.csv';
         $data->type = 'Export File Selected Collection with Product';
         $data->shop = $shopurl;
         $data->save();

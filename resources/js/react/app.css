@@ -25,7 +25,8 @@
     color: #fff;
     border-color: #27ae60;
 }
-#file{
+
+#file {
     display: none;
 }
 
@@ -56,7 +57,8 @@
     font-size: 15px;
     width: 100%;
 }
-.Polaris-Frame{
+
+.Polaris-Frame {
     min-height: 0px;
 }
 
@@ -88,15 +90,16 @@
 
 .formbold-mb-5 {
     margin-bottom: 20px;
-  }
-  .formbold-file-input input {
+}
+
+.formbold-file-input input {
     opacity: 0;
     position: absolute;
     width: 100%;
     height: 100%;
-  }
+}
 
-  .formbold-file-input label {
+.formbold-file-input label {
     position: relative;
     border: 3px dashed #e0e0e0;
     border-radius: 6px;
@@ -106,23 +109,25 @@
     justify-content: center;
     padding: 48px;
     text-align: center;
-  }
-  .formbold-drop-file {
+}
+
+.formbold-drop-file {
     display: block;
     font-weight: 600;
     color: #000;
     font-size: 20px;
     margin-bottom: 8px;
-  }
+}
 
-  .formbold-or {
+.formbold-or {
     font-weight: 500;
     font-size: 16px;
     color: #000;
     display: block;
     margin-bottom: 8px;
-  }
-  .formbold-browse {
+}
+
+.formbold-browse {
     font-weight: 500;
     font-size: 16px;
     color: #000;
@@ -130,20 +135,32 @@
     padding: 8px 28px;
     border: 1px solid #e0e0e0;
     border-radius: 4px;
-  }
-#plan{
+}
+
+#plan {
     background: #ffffb1;
     border: 1px solid #ffbc00;
     padding: 3%;
 }
-.headingtrial{
+
+.headingtrial {
     font-size: 21px;
 }
-.trialtext{
+
+.trialtext {
     font-size: 10px;
 }
-.planbutton{
+
+.planbutton {
     background: #ffffb1;
     border: 1px solid #ffbc00;
     padding: 6%;
+}
+
+.swal2-title {
+    color: red;
+}
+
+.swal2-html-container {
+    color: red;
 }

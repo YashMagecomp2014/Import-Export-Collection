@@ -13,11 +13,12 @@ class IECollectionController extends Controller
 {
     public function fileExport(Request $request)
     {
+        $time = time();
         $shopurl = $request->header('url');
-        Excel::store(new UsersExport($shopurl), 'public/' . $shopurl . '/Get-All-Collection.csv');
+        Excel::store(new UsersExport($shopurl), 'public/' . $shopurl . '/' . $time . 'Get-All-Collection.csv');
         $data = new Collection();
-        $data->file = 'Get-All-Collection.csv';
-        $data->path = 'storage/' . $shopurl . '/Get-All-Collection.csv';
+        $data->file = $time. 'Get-All-Collection.csv';
+        $data->path = 'storage/' . $shopurl . '/' .$time. 'Get-All-Collection.csv';
         $data->type = 'Export File All Collection';
         $data->shop = $shopurl;
         $data->save();
@@ -31,11 +32,12 @@ class IECollectionController extends Controller
 
     public function fileExportwithproduct(Request $request)
     {
+        $time = time();
         $shopurl = $request->header('url');
-        Excel::store(new GetCollectionWithHandle($shopurl), 'public/' . $shopurl . '/Get-All-Collection-with-Handle.csv');
+        Excel::store(new GetCollectionWithHandle($shopurl), 'public/' . $shopurl . '/' .$time. 'Get-All-Collection-with-Handle.csv');
         $data = new Collection();
-        $data->file = 'Get-All-Collection-with-Handle.csv';
-        $data->path = 'storage/' . $shopurl . '/Get-All-Collection-with-Handle.csv';
+        $data->file = $time. 'Get-All-Collection-with-Handle.csv';
+        $data->path = 'storage/' . $shopurl . '/' .$time. 'Get-All-Collection-with-Handle.csv';
         $data->type = 'Export File All Collection With Product';
         $data->shop = $shopurl;
         $data->save();
@@ -48,11 +50,12 @@ class IECollectionController extends Controller
     }
     public function GetAllProduct(Request $request)
     {
+        $time = time();
         $shopurl = $request->header('url');
-        Excel::store(new GetAllProduct($shopurl), 'public/' . $shopurl . '/Get-All-Product.csv');
+        Excel::store(new GetAllProduct($shopurl), 'public/' . $shopurl . '/' .$time. 'Get-All-Product.csv');
         $data = new Collection();
-        $data->file = 'Get-All-Product.csv';
-        $data->path = 'storage/' . $shopurl . '/Get-All-Product.csv';
+        $data->file = $time. 'Get-All-Product.csv';
+        $data->path = 'storage/' . $shopurl . '/' .$time. 'Get-All-Product.csv';
         $data->type = 'Export File All Product';
         $data->shop = $shopurl;
         $data->save();
@@ -66,11 +69,12 @@ class IECollectionController extends Controller
     }
     public function GetAllProductNotInAnyCollection(Request $request)
     {
+        $time = time();
         $shopurl = $request->header('url');
-        Excel::store(new GetAllProductNotInAnyCollection($shopurl), 'public/' . $shopurl . '/Get-Product-Not-In-Any-Collection.csv');
+        Excel::store(new GetAllProductNotInAnyCollection($shopurl), 'public/' . $shopurl . '/' .$time. 'Get-Product-Not-In-Any-Collection.csv');
         $data = new Collection();
-        $data->file = 'Get-Product-Not-In-Any-Collection.csv';
-        $data->path = 'storage/' . $shopurl . '/Get-Product-Not-In-Any-Collection.csv';
+        $data->file =  $time. 'Get-Product-Not-In-Any-Collection.csv';
+        $data->path = 'storage/' . $shopurl . '/' .$time. 'Get-Product-Not-In-Any-Collection.csv';
         $data->type = 'Export File Products not in collection';
         $data->shop = $shopurl;
         $data->save();

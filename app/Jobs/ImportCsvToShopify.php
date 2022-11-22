@@ -118,6 +118,10 @@ class ImportCsvToShopify implements ShouldQueue
                 $mainData[] = $collection;
             } else if ($collection['title'] && $collection['sort_order'] && !$collection['products'] && !$collection['productid'] && !$collection['rules']) {
                 $mainData[] = $collection;
+            } else if (!$collection['title']) {
+                $mainData[] = $collection;
+            } else if (!$collection['sort_order']) {
+                $mainData[] = $collection;
             }
         }
         //Maindata to Push collection function
@@ -176,7 +180,6 @@ class ImportCsvToShopify implements ShouldQueue
 
     public function collection($rows, $shopurl)
     {
-        info($rows['sort_order']);
         //Rules Array Manage
         if (isset($rows['rules']) && $rows['rules']) {
             $rule = [];
@@ -242,7 +245,6 @@ class ImportCsvToShopify implements ShouldQueue
             ];
         }
 
-        info($variable);
         //Graphql CreateCollection Query
         $query = 'mutation CollectionCreate($input: CollectionInput!) {
             collectionCreate(input: $input) {
@@ -285,10 +287,25 @@ class ImportCsvToShopify implements ShouldQueue
         //Call a curls function
         $result = $this->curls($finalquery, $shopurl);
 
-        $responce = json_encode($result);
+        $responce = json_decode($result, true);
+
+        $usererror = $responce['data']['collectionCreate']['userErrors'];
+
+        foreach($usererror as $error){
+
+            if ($error) {
+                $returnResponse["error"] = [];
+                $returnResponse["error"][] = $rows['title'] .' '. $error['message'];
+                $returnResponse["is_error"] = true;
+                return $returnResponse;
+            }
+
+        }
 
         info($responce);
         return $responce;
+
+      
 
     }
     public function GetProductId($handle, $shopurl)

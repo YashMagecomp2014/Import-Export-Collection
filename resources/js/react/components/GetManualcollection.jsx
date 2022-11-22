@@ -172,6 +172,7 @@ function GetAllcollection({ setselectvalue }) {
             getRowId={(row) => row.id}
             onRowSelectionChange={setRowSelection}
             state={{ rowSelection }}
+            enableGlobalFilter={false}
             renderTopToolbarCustomActions={() => (
               <Tooltip arrow title="Refresh Data">
                 <IconButton onClick={onclick}>

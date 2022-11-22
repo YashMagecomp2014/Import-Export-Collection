@@ -74,9 +74,10 @@ class CollectionImportController extends Controller
         }
 
         // save file and move to public folder
+        $time = time();
         $data = new Collection();
         $file = $request->file('file');
-        $filename = date('YmdHi') . $file->getClientOriginalName();
+        $filename = $time . $file->getClientOriginalName();
         $path = $file->move(public_path('public/file/'.$shopurl), $filename);
         $data['file'] = $filename;
         $data['path'] = 'public/file/' . $shopurl .'/'. $filename;
