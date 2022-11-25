@@ -1,6 +1,8 @@
 <?php
 namespace App\Exports;
 
+use App\Helpers\CommonHelpers;
+use App\Models\Session;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
@@ -19,47 +21,16 @@ class GetCollectionWithHandle implements FromCollection, WithHeadings
     public function collection()
     {
 
-        $query = 'query {
-            collections(first: 50) {
-              edges {
-                cursor
-                node {
-                  title
-                  descriptionHtml
-                  handle
-                  updatedAt
-                  sortOrder
-                  image {
-                    src
-                  }
-                  seo {
-                    description
-                    title
-                   }
-                  products(first: 10){
-                    edges{
-                      cursor
-                      node{
-                        handle
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-          ';
+        $shop = Session::where("shop", $this->shopurl)->first();
+        if (!$shop) {
+            return collect([]);
+        }
+        // $response = $shop->graph($body);
+        $response = CommonHelpers::getAllCollections($shop, $withProduct = true);
 
-        $body = [
-            "query" => $query,
-        ];
-        $shop = $this->shopurl;
-        $result = (new Graphql($body))->curls($body, $shop);
+        $data = $response->toArray();
 
-        $response = json_decode($result, true);
-        $collections = $response['data']['collections']['edges'];
-
-        if (!$collections) {
+        if (!$data) {
             $arrofcsv[] = array(
                 "title" => '',
                 'Body (HTML)' => '',
@@ -74,37 +45,37 @@ class GetCollectionWithHandle implements FromCollection, WithHeadings
                 'SEO Description' => '',
 
             );
+
+            info('hey');
         }
 
         // $data = $collections;
-        foreach ($collections as $data) {
+        foreach ($response as $data) {
 
-            $collection = $data['node'];
+            $products = $data['products']['edges'];
 
-            $product = $collection['products']['edges'];
+            foreach ($products as $key => $product) {
 
-            foreach ($product as $key => $producthandle) {
-
-                $handle = $producthandle['node'];
+                $handle = $product['node']['handle'];
 
                 if ($key == 0) {
                     $array = array(
-                        "title" => $collection['title'],
-                        'Body (HTML)' => $collection['descriptionHtml'],
-                        "handle" => $collection['handle'],
+                        "title" => $data['title'],
+                        'Body (HTML)' => $data['descriptionHtml'],
+                        "handle" => $data['handle'],
                         'Rules' => '',
-                        "products" => $handle['handle'],
+                        "products" => $handle,
                         'Disjunctive' => '',
-                        'Sort Order' => $collection['sortOrder'],
+                        'Sort Order' => $data['sortOrder'],
                         'Template Suffix' => '',
                         'Published' => 'true',
-                        'SEO Title' => $collection['seo']['title'],
-                        'SEO Description' => $collection['seo']['description'],
+                        'SEO Title' => $data['seo']['title'],
+                        'SEO Description' => $data['seo']['description'],
 
                     );
 
-                    if (isset($collection['image']['src']) && $collection['image']['src']) {
-                        $array['image'] = $collection['image']['src'];
+                    if (isset($data['image']['src']) && $data['image']['src']) {
+                        $array['image'] = $data['image']['src'];
                     }
                     $arrofcsv[] = $array;
 
@@ -114,7 +85,7 @@ class GetCollectionWithHandle implements FromCollection, WithHeadings
                         'Body (HTML)' => '',
                         "handle" => '',
                         'Rules' => '',
-                        "products" => $handle['handle'],
+                        "products" => $handle,
                         'Disjunctive' => '',
                         'Sort Order' => '',
                         'Template Suffix' => '',
@@ -125,10 +96,11 @@ class GetCollectionWithHandle implements FromCollection, WithHeadings
                     );
 
                 }
-
             }
 
         }
+
+        
 
         $result = collect($arrofcsv);
 

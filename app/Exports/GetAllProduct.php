@@ -10,6 +10,7 @@ class GetAllProduct implements FromCollection, WithHeadings
     /**
      * @return \Illuminate\Support\Collection
      */
+
     protected $shopurl;
 
     public function __construct($shopurl)
@@ -21,7 +22,7 @@ class GetAllProduct implements FromCollection, WithHeadings
     {
 
         $query = 'query {
-            products(first: 100) {
+            products(first: 200) {
               edges {
                 cursor
                 node {
@@ -37,16 +38,6 @@ class GetAllProduct implements FromCollection, WithHeadings
                       amount
                     }
                   }
-                  variants(first: 1) {
-                    edges {
-                      cursor
-                      node {
-                        id
-                        title
-                        sku
-                      }
-                    }
-                  }
                 }
               }
             }
@@ -57,10 +48,8 @@ class GetAllProduct implements FromCollection, WithHeadings
             "query" => $query,
         ];
 
-        $shop = $this->shopurl;
-        $result = (new Graphql($body))->curls($body, $shop);
-
-        $response = json_decode($result, true);
+        $shop = Session::where('shop', $this->shopurl)->first();
+        $response = $shop->graph($body);
         $products = $response['data']['products']['edges'];
 
         if (!$products) {
@@ -88,33 +77,33 @@ class GetAllProduct implements FromCollection, WithHeadings
 
             $product = $data['node'];
 
-            $variant = $product['variants']['edges'];
+            // $variant = $product['variants']['edges'];
 
-            foreach ($variant as $data) {
+            // foreach ($variant as $data) {
 
-                $variantdata = ($data['node']);
+            // $variantdata = ($data['node']);
 
-                $price = $product['priceRange']['maxVariantPrice']['amount'];
+            $price = $product['priceRange']['maxVariantPrice']['amount'];
 
-                $arrofcsv[] = array(
-                    'Product Id' => $product['id'],
-                    'Product Title' => $product['title'],
-                    'Body (HTML)' => $product['descriptionHtml'],
-                    'Vendor' => $product['vendor'],
-                    'Product Type' => $product['productType'],
-                    'Handle' => $product['handle'],
-                    'Product Tags' => $product['tags'],
-                    'Variant Title' => $variantdata['title'],
-                    'Price' => $price,
-                    'SKU' => $variantdata['sku'],
-                    'Option 1' => $variantdata['title'],
-                    'Option 2' => '',
-                    'Option 3' => '',
+            $arrofcsv[] = array(
+                'Product Id' => $product['id'],
+                'Product Title' => $product['title'],
+                'Body (HTML)' => $product['descriptionHtml'],
+                'Vendor' => $product['vendor'],
+                'Product Type' => $product['productType'],
+                'Handle' => $product['handle'],
+                'Product Tags' => $product['tags'],
+                'Variant Title' => '',
+                'Price' => $price,
+                'SKU' => '',
+                'Option 1' => '',
+                'Option 2' => '',
+                'Option 3' => '',
 
-                );
-            }
-
+            );
         }
+
+        // }
 
         // print_r($product);
         // exit;

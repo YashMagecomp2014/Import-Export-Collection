@@ -279,15 +279,14 @@ class ImportCsvToShopify implements ShouldQueue
             }';
 
         //Create FinalQuery for use Curl
-        $finalquery = [
+        $body = [
             "query" => $query,
             "variables" => $variable,
         ];
 
         //Call a curls function
-        $result = $this->curls($finalquery, $shopurl);
-
-        $responce = json_decode($result, true);
+        $shop = Session::where('shop', $shopurl['shop'])->first();
+        $responce = $shop->graph($body);
 
         $usererror = $responce['data']['collectionCreate']['userErrors'];
 
@@ -320,15 +319,15 @@ class ImportCsvToShopify implements ShouldQueue
             }
             }';
 
-        $finalquery = [
+        $body = [
             "query" => $productbyhandlequery,
             "variables" => $productbyhandle,
         ];
 
-        $result = $this->curls($finalquery, $shopurl);
+        $shop = Session::where('shop', $shopurl['shop'])->first();
+        $productid = $shop->graph($body);
 
-        $productid = json_decode($result, true);
-
+        
         $invalidhandle = $productid['data'];
 
         if ($invalidhandle['productByHandle'] == null) {

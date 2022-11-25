@@ -59,10 +59,9 @@ class GetSelectedCollectionWithProduct implements FromCollection, WithHeadings
         $body = [
             "query" => $query,
         ];
-        $shop = $this->shopurl;
-        $result = (new Graphql($body))->curls($body, $shop);
-    
-        $response = json_decode($result, true);
+        $shop = Session::where('shop', $this->shopurl)->first();
+        $response = $shop->graph($body);
+
         $collections = $response['data']['nodes'];
         
         // $data = $collections;

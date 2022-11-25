@@ -21,7 +21,6 @@ function GetAllcollection({ setselectvalue }) {
   const [active, setActive] = useState(true);
   const [progress, setProgress] = useState(true);
   const [toastactive, setToastActive] = useState(false);
-  const [query, setQuery] = useState("");
 
   const toggleActive = useCallback(() => setActive((active) => !active), []);
 
@@ -131,7 +130,6 @@ function GetAllcollection({ setselectvalue }) {
   useEffect(() => {
     //do something when the row selection changes...
     console.info({ rowSelection });
-    console.log(query);
   }, [rowSelection]);
 
   return (
@@ -176,7 +174,6 @@ function GetAllcollection({ setselectvalue }) {
             onRowSelectionChange={setRowSelection}
             state={{ rowSelection }}
             enableGlobalFilter={false}
-            onSearchChange={setQuery}
             renderTopToolbarCustomActions={() => (
               <Tooltip arrow title="Refresh Data">
                 <IconButton onClick={onclick}>

@@ -1,8 +1,8 @@
 <?php
 namespace App\Exports;
 
+use App\Helpers\CommonHelpers;
 use App\Models\Session;
-use GuzzleHttp\Psr7\Request;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
@@ -21,48 +21,20 @@ class UsersExport implements FromCollection, WithHeadings
     public function collection()
     {
 
-        $query = 'query { 
-            collections(first: 250) { 
-                edges 
-                { 
-                    node 
-                    { 
-                        title 
-                        handle 
-                        descriptionHtml 
-                        sortOrder 
-                        image
-                        { 
-                            src
-                         } 
-                         seo 
-                         { 
-                            description 
-                            title 
-                        } 
-                    } 
-                } 
-            } 
+        $shop = Session::where("shop", $this->shopurl)->first();
+        if (!$shop) {
+            return collect([]);
         }
-          ';
 
-        $body = [
-            "query" => $query,
-        ];
-        $shop = $this->shopurl;
-        $result = (new Graphql($body))->curls($body, $shop);
+        $response = CommonHelpers::getAllCollections($shop);
 
-        $response = json_decode($result, true);
-        $collections = $response['data']['collections']['edges'];
-
-        if (!$collections) {
-
+        $data = $response->toArray();
+        if (!$data) {
             $arrofcsv[] = array(
                 "title" => '',
                 'Body (HTML)' => '',
                 "handle" => '',
                 'Rules' => '',
-                'Image' => '',
                 "products" => '',
                 'Disjunctive' => '',
                 'Sort Order' => '',
@@ -74,9 +46,8 @@ class UsersExport implements FromCollection, WithHeadings
             );
         }
 
-        foreach ($collections as $data) {
-
-            $collection = $data['node'];
+        foreach ($response as $key => $data) {
+            $collection = $data;
 
             $array = array(
                 "title" => $collection['title'],
@@ -97,12 +68,11 @@ class UsersExport implements FromCollection, WithHeadings
                 $array['image'] = $collection['image']['src'];
             }
             $arrofcsv[] = $array;
-
         }
 
-        $collectiondata = collect($arrofcsv);
+        $result = collect($arrofcsv);
 
-        return $collectiondata;
+        return $result;
     }
     public function headings(): array
     {
@@ -119,30 +89,7 @@ class UsersExport implements FromCollection, WithHeadings
             'SEO Title',
             'SEO Description',
             'Image',
+            'productid',
         ];
-    }
-
-    public function curls($body, $shop)
-    {
-        $token = Session::where('shop', $shop)->first('access_token');
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, 'https://' . $shop . '/admin/api/2022-10/graphql.json');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($body));
-
-        $headers = array();
-        $headers[] = 'Content-Type: application/json';
-        $headers[] = 'X-Shopify-Access-Token: ' . $token->access_token . '';
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
-        $result = curl_exec($ch);
-        if (curl_errno($ch)) {
-            echo 'Error:' . curl_error($ch);
-        }
-        curl_close($ch);
-
-        return $result;
     }
 }

@@ -9,7 +9,6 @@ class Graphql
     {
         $token = Session::where('shop', $shop)->first('access_token');
         $ch = curl_init();
-        info($shop);
         curl_setopt($ch, CURLOPT_URL, 'https://' . $shop . '/admin/api/2022-10/graphql.json');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_POST, 1);
