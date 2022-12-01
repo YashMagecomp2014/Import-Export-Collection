@@ -19,6 +19,7 @@ class CreateCollectionsTable extends Migration
             $table->string('path')->nullable();
             $table->string('type')->nullable();
             $table->string('errors', 2048)->nullable()->default('[]');
+            $table->string('shop')->nullable();
             $table->timestamps();
         });
     }

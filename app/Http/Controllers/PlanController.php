@@ -49,7 +49,7 @@ class PlanController extends Controller
             "variables" => $variable,
         ];
 
-        $shop = Session::where('shop', $this->shopurl)->first();
+        $shop = Session::where('shop', $shopName)->first();
         $response = $shop->graph($body);
 
 

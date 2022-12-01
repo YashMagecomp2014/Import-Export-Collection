@@ -7,7 +7,7 @@
     background-color: #fff;
     width: 300px;
     border-radius: 10px;
-    border: 3px dashed #ccc;
+    border: 1px dashed #000000;
     margin: 20px;
     padding: 50px;
     text-align: center;
@@ -31,18 +31,16 @@
 }
 
 #Submitbtn {
-    float: right;
-    padding: 3%;
-    width: 100%;
-}
-
-.row {
-    padding: 1%;
+    line-height: 30px;
+    font-size: 15px;
+    width: 55%;
+    height: 40px;
+    filter: drop-shadow(2.624px 1.454px 1.5px rgba(0, 0, 0, 0.2));
+    background-color: #0c9833;
 }
 
 #maindropdown {
-    padding-top: 15%;
-    background: #fff;
+    padding-top: 5%;
     padding-bottom: 5%;
     border-radius: 20px;
 }
@@ -50,30 +48,27 @@
 #maindropdownselect {
     line-height: 30px;
     font-size: 15px;
+    font-weight: 900;
+    filter: drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.08));
+}
+
+#maindropdownselect option {
+    display: block;
+    width: auto;
+
 }
 
 #maindropdownbtn {
     line-height: 30px;
     font-size: 15px;
     width: 100%;
+    height: 40px;
+    filter: drop-shadow(2.624px 1.454px 1.5px rgba(0, 0, 0, 0.2));
+    background-color: #0c9833;
 }
 
 .Polaris-Frame {
     min-height: 0px;
-}
-
-#container1 {
-    padding-top: 2%;
-}
-
-#container2 {
-    padding-top: 4%;
-}
-
-#row2 {
-    padding: 2%;
-    background: #fff;
-    border-radius: 20px
 }
 
 #mainnav .nav-link {
@@ -83,9 +78,11 @@
 }
 
 #collection {
-    font-size: 25px;
-    padding: 4%;
-    padding-left: 3%;
+    font-size: 20px;
+    line-height: 37px;
+    color: #000000;
+    font-weight: 700;
+    padding: 1%;
 }
 
 .formbold-mb-5 {
@@ -101,7 +98,7 @@
 
 .formbold-file-input label {
     position: relative;
-    border: 3px dashed #e0e0e0;
+    border: 1px dashed #000000;
     border-radius: 6px;
     min-height: 200px;
     display: flex;
@@ -163,4 +160,73 @@
 
 .swal2-html-container {
     color: red;
+}
+
+#Activeplan {
+    background: #ccffe1;
+    border: 1px solid #27ae60;
+    padding: 3%;
+    border-radius: 10px;
+}
+
+.checkPlan {
+    background: #27ae60;
+    padding: 2%;
+    border-radius: 50%;
+}
+
+.headingActive {
+    font-size: 20px;
+}
+
+.Activetext {
+    font-size: 15px;
+}
+
+#HeadingAction {
+    display: flex;
+}
+
+.Polaris-Tabs__Wrapper {
+    background: #fff;
+    padding: 1%;
+    filter: drop-shadow(6.624px 7.454px 10.5px rgba(0, 0, 0, 0.2));
+}
+
+.Polaris-Tabs__Tab--selected .Polaris-Tabs__Title::before {
+    background: #0d6efd;
+    color: #0d6efd;
+}
+
+#inputDragDrop {
+    padding: 8%;
+}
+
+.selectaction {
+    padding: 1%;
+}
+
+#container2 {
+    background: #f3f1f7;
+}
+
+.Polaris-Tabs__Title {
+    min-width: 9rem;
+}
+
+.btn-primary {
+    width: 65%;
+    height: 29px;
+    filter: drop-shadow(2.624px 1.454px 1.5px rgba(0, 0, 0, 0.2));
+    background-color: #0d6efd;
+    font-size: 12px;
+    color: #ffffff;
+    font-weight: 700;
+
+}
+
+.download {
+    font-size: 20px;
+    line-height: 18px;
+    font-weight: 400;
 }

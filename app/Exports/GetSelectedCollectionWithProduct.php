@@ -4,7 +4,7 @@ namespace App\Exports;
 use App\Models\Session;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
-use App\Exports\UsersExport;
+use Illuminate\Support\Str;
 
 class GetSelectedCollectionWithProduct implements FromCollection, WithHeadings
 {
@@ -31,6 +31,14 @@ class GetSelectedCollectionWithProduct implements FromCollection, WithHeadings
             title
             descriptionHtml
             sortOrder
+            ruleSet {
+                appliedDisjunctively
+                rules {
+                  column
+                  relation
+                  condition
+                }
+              }
             image{
                 src
             }
@@ -38,13 +46,13 @@ class GetSelectedCollectionWithProduct implements FromCollection, WithHeadings
                 description
                 title
             }
-            products(first: 10) {
+            products(first: 250) {
               edges {
                 node {
                   id
                   title
                   handle
-                  seo { 
+                  seo {
                     description
                     title
                  }
@@ -63,12 +71,35 @@ class GetSelectedCollectionWithProduct implements FromCollection, WithHeadings
         $response = $shop->graph($body);
 
         $collections = $response['data']['nodes'];
-        
+
         // $data = $collections;
         foreach ($collections as $data) {
-          
 
             $collection = $data;
+
+            $sort_order = $collection['sortOrder'];
+            
+            $sororder = self::Sortorder($sort_order);
+
+            $rule = '';
+            $Disjunctive = '';
+            if (isset($data['ruleSet']) && $data['ruleSet']) {
+                $rules = $data['ruleSet']['rules'];
+
+                $Disjunctives = $data['ruleSet']['appliedDisjunctively'];
+                
+                if($Disjunctives == 1){
+                    $Disjunctive = 'any';
+                }else{
+                    $Disjunctive = 'all';
+                }
+
+                foreach ($rules as $value) {
+
+                    $rule .= $value['column'] . ' ' . $value['relation'] . ' ' . $value['condition'] . ',';
+
+                }
+            }
 
             $product = $collection['products']['edges'];
 
@@ -77,38 +108,37 @@ class GetSelectedCollectionWithProduct implements FromCollection, WithHeadings
                 $handle = $producthandle['node'];
 
                 if ($key == 0) {
-                    $arrofcsv[] = array(
+                    $array = array(
                         "title" => $collection['title'],
                         'Body (HTML)' => $collection['descriptionHtml'],
-                        "handle" => $collection['handle'],
-                        'Image' => $collection['image'],
-                        'Rules' => '',
+                        'Rules' => $rule,
                         "products" => $handle['handle'],
-                        'Disjunctive' => '',
-                        'Sort Order' => $collection['sortOrder'],
+                        'Disjunctive' => $Disjunctive,
+                        'Sort Order' => $sororder,
                         'Template Suffix' => '',
                         'Published' => 'true',
                         'SEO Title' => $collection['seo']['title'],
                         'SEO Description' => $collection['seo']['description'],
 
                     );
+                    if (isset($collection['image']['src']) && $collection['image']['src']) {
+                        $array['image'] = $collection['image']['src'];
+                    }
+                    $arrofcsv[] = $array;
 
                 } else {
                     $arrofcsv[] = array(
                         "title" => '',
                         'Body (HTML)' => '',
-                        "handle" => '',
-                        'Image' => '',
                         'Rules' => '',
                         "products" => $handle['handle'],
                         'Disjunctive' => '',
                         'Sort Order' => '',
-                        'Template' => '',
-                        'Suffix' => '',
+                        'Template Suffix' => '',
                         'Published' => '',
-                        'SEO' => '',
-                        'Title' => '',
+                        'SEO Title' => '',
                         'SEO Description' => '',
+                        'Image' => '',
 
                     );
 
@@ -126,19 +156,40 @@ class GetSelectedCollectionWithProduct implements FromCollection, WithHeadings
     {
         return [
 
-            'Title',
-            'Body (HTML)',
-            'Handle',
-            'Image',
-            'Rules',
+            'Collection',
+            'Description',
+            'Conditions',
             'Products',
-            'Disjunctive',
+            'Products must match',
             'Sort Order',
             'Template Suffix',
             'Published',
             'SEO Title',
             'SEO Description',
+            'Collection Image',
 
         ];
+    }
+    public function Sortorder($sort_order)
+    {
+
+        $sortorder = [
+            "alpha_asc" => "Product Title A-Z",
+            "best_selling" => "Best Selling",
+            "created" => "Oldest",
+            "alpha_desc" => "Product Title Z-A",
+            "price_asc" => "Lowest Price",
+            "price_desc" => "Highest Price",
+            "created_desc" => "Newest",
+            "manual" => "Manually",
+        ];
+
+        $value = Str::slug($sort_order, "_");
+
+        if (isset($sortorder[$value])) {
+            return $sortorder[$value];
+        } else {
+            return "CREATED";
+        }
     }
 }

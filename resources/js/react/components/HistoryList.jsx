@@ -9,13 +9,18 @@ import { IconButton, Tooltip } from '@mui/material';
 import { Delete } from '@mui/icons-material';
 import { Box } from '@mui/material';
 import { Spinner } from '@shopify/polaris';
+import Dropdown from "./Dropdown";
+import { useDispatch, useSelector } from "react-redux";
+import { disableLoadHistory } from "../redux/rootReducer";
 
 function HistoryList() {
+  const isLoadData = useSelector((state) => state.loadHistory);
+  const dispatch = useDispatch();
   const [collections, setUsers] = useState([]);
   const [rowSelection, setRowSelection] = useState([]);
   const [progress, setProgress] = useState(true);
 
-  
+
   const onclick = () => {
     fetchData();
 
@@ -36,6 +41,13 @@ function HistoryList() {
     setUsers();
 
   }
+
+  useEffect(() => {
+    if (isLoadData) {
+      fetchData()
+      dispatch(disableLoadHistory());
+    }
+  }, [isLoadData])
   const fetchData = async () => {
     var res = await GlobalAPIcall('GET', '/import');
     setUsers(res)
@@ -67,7 +79,7 @@ function HistoryList() {
         Cell: ({ cell, row }) => {
           var error = JSON.parse(row.original.errors);
 
-          if(row.original.errors){
+          if (row.original.errors) {
             return error.map(item => (
               <div key={item}>
                 <p style={{ borderBottom: '1px solid black' }}>{item}</p>
@@ -94,6 +106,7 @@ function HistoryList() {
   return (
     <>
       <div className="row">
+        <h1 id="collection">Collections</h1>
         <div className="col-md-8">
           {progress && <Spinner accessibilityLabel="Spinner example" size="large" />}
           <MaterialReactTable
@@ -105,6 +118,7 @@ function HistoryList() {
             state={{ rowSelection }}
             enableGlobalFilter={false}
             enableColumnFilter={false}
+            enablePinning
             renderTopToolbarCustomActions={() => (
               <Box sx={{ display: 'flex', gap: '1rem' }}>
                 <Tooltip arrow title="Refresh Data">
@@ -151,6 +165,7 @@ function HistoryList() {
           />
         </div>
 
+        {/* <Dropdown setselectvalue={setselectvalue}/> */}
         <CollectionPage fetchData={fetchData} />
 
       </div>

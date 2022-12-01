@@ -1,27 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
-import { Redirect } from "@shopify/app-bridge/actions";
+import { Fullscreen, Redirect } from "@shopify/app-bridge/actions";
 import { authenticatedFetch } from "@shopify/app-bridge-utils"
 import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client';
 import { ApolloProvider } from '@apollo/client/react';
 import { AppProvider } from "@shopify/polaris";
 import translations from "@shopify/polaris/locales/en.json";
 import '@shopify/polaris/dist/styles.css';
-import PageLayout from "./components/PageLayout";
 import CollectionList from "./components/CollectionList";
 import { Provider, useAppBridge } from '@shopify/app-bridge-react';
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import ClientRouter from "./components/ClientRouter";
-import AppNavigation from "./components/AppNavigation";
 import './app.css';
-import GetAllcollection from './components/GetAllcollection';
-import HistoryList from './components/HistoryList';
-import GetAutocollection from './components/GetAutocollection';
-import GetManualcollection from './components/GetManualcollection';
-import { appconfig } from './config/config';
-import Dropdown from './components/Dropdown';
+import { Provider as ReduxProvider } from 'react-redux';
+import store from './redux/store';
 
 function userLoggedInFetch(app) {
     const fetchFunction = authenticatedFetch(app);
@@ -43,6 +36,10 @@ function userLoggedInFetch(app) {
 
 function AppBridgeApolloProvider({ children }) {
     const app = useAppBridge();
+    const fullscreen = Fullscreen.create(app);
+    // Call the `ENTER` action to put the app in full-screen mode
+    fullscreen.dispatch(Fullscreen.Action.ENTER);
+
     const client = new ApolloClient({
         link: new HttpLink({
             credentials: 'same-origin',
@@ -64,13 +61,16 @@ function ExamplePage() {
 function App({ shop, host, apiKey }) {
     const config = { apiKey: apiKey, shopOrigin: shop, host: host, forceRedirect: true };
 
+
     return (
         <AppProvider i18n={translations}>
-            <Provider config={config}>
-                <BrowserRouter>
-                    <CollectionList />
-                </BrowserRouter>
-            </Provider>
+            <ReduxProvider store={store}>
+                <Provider config={config}>
+                    <BrowserRouter>
+                        <CollectionList />
+                    </BrowserRouter>
+                </Provider>
+            </ReduxProvider>
         </AppProvider>
     );
 }

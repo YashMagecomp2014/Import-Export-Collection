@@ -60,10 +60,7 @@ class CollectionController extends Controller
               nodes {
                 id
                 title
-                handle
-                updatedAt
                 productsCount
-                sortOrder
                 seo {
                     description
                     title
@@ -71,6 +68,7 @@ class CollectionController extends Controller
               }
             }
           }';
+
 
         $body = [
             "query" => $query,
@@ -86,10 +84,7 @@ class CollectionController extends Controller
               nodes {
                 id
                 title
-                handle
-                updatedAt
                 productsCount
-                sortOrder
                 seo {
                     description
                     title
@@ -111,10 +106,7 @@ class CollectionController extends Controller
               nodes {
                 id
                 title
-                handle
-                updatedAt
                 productsCount
-                sortOrder
               }
             }
           }
@@ -130,7 +122,6 @@ class CollectionController extends Controller
     {
         $shop = Session::where('shop', $shopurl)->first();
         $response = $shop->graph($body);
-
         $collections = $response['data']['collections']['nodes'];
 
         return $collections;
@@ -145,7 +136,7 @@ class CollectionController extends Controller
         $shopurl = $request->header('url');
 
         $time = time();
-        $collection = Excel::store(new GetSelectedCollections($shopurl, $finalid), 'public/' . $shopurl . '/' . $time . 'Get-Selected-Collection.csv');
+        Excel::store(new GetSelectedCollections($shopurl, $finalid), 'public/' . $shopurl . '/' . $time . 'Get-Selected-Collection.csv');
 
         $data = new Collection();
         $data->file = $time . 'Get-Selected-Collection.csv';
@@ -170,7 +161,7 @@ class CollectionController extends Controller
 
         $shopurl = $request->header('url');
 
-        $collection = Excel::store(new GetSelectedCollectionWithProduct($shopurl, $finalid), 'public/' . $shopurl . '/' . $time . 'Get-Selected-Collection-With-Product.csv');
+        Excel::store(new GetSelectedCollectionWithProduct($shopurl, $finalid), 'public/' . $shopurl . '/' . $time . 'Get-Selected-Collection-With-Product.csv');
 
         $data = new Collection();
         $data->file = $time . 'Get-Selected-Collection-With-Product.csv';

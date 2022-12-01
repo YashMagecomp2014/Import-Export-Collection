@@ -4,6 +4,7 @@ namespace App\Exports;
 use App\Models\Session;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Illuminate\Support\Str;
 
 class GetSelectedCollections implements FromCollection, WithHeadings
 {
@@ -58,14 +59,17 @@ class GetSelectedCollections implements FromCollection, WithHeadings
 
             $collection = $data;
 
+            $sort_order = $collection['sortOrder'];
+            
+            $sororder = self::Sortorder($sort_order);
+
             $array = array(
                 "title" => $collection['title'],
                 'Body (HTML)' => $collection['descriptionHtml'],
-                "handle" => $collection['handle'],
                 'Rules' => '',
                 "products" => '',
                 'Disjunctive' => '',
-                'Sort Order' => $collection['sortOrder'],
+                'Sort Order' => $sororder,
                 'Template Suffix' => '',
                 'Published' => 'true',
                 'SEO Title' => $collection['seo']['title'],
@@ -86,20 +90,40 @@ class GetSelectedCollections implements FromCollection, WithHeadings
     public function headings(): array
     {
         return [
-            'Title',
-            'Body (HTML)',
-            'Handle',
-            'Rules',
+            'Collection',
+            'Description',
+            'Conditions',
             'Products',
-            'Disjunctive',
+            'Products must match',
             'Sort Order',
             'Template Suffix',
             'Published',
             'SEO Title',
             'SEO Description',
-            'Image',
-            'productid'
+            'Collection Image',
             
         ];
+    }
+    public function Sortorder($sort_order)
+    {
+
+        $sortorder = [
+            "alpha_asc" => "Product Title A-Z" ,
+            "best_selling" => "Best Selling" ,
+            "created" => "Oldest" ,
+            "alpha_desc" => "Product Title Z-A" ,
+            "price_asc" => "Lowest Price" ,
+            "price_desc" => "Highest Price" ,
+            "created_desc" => "Newest" ,
+            "manual" => "Manually" ,
+        ];
+
+        $value = Str::slug($sort_order, "_");
+
+        if (isset($sortorder[$value])) {
+            return $sortorder[$value];
+        } else {
+            return "CREATED";
+        }
     }
 }

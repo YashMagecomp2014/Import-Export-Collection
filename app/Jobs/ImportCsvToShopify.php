@@ -9,7 +9,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 
 class ImportCsvToShopify implements ShouldQueue
 {
@@ -71,14 +71,14 @@ class ImportCsvToShopify implements ShouldQueue
 
                 $mainData[] = $collection;
 
-            } else if ($collection["title"] && $collection['productid']) {
+            } else if ($collection["title"] && isset($collection['productid']) && $collection['productid']) {
 
                 if (isset($collection['productid'])) {
                     $collection['product_ids'][] = $collection['productid'];
                 }
                 $mainData[] = $collection;
 
-            } else if (!$collection["title"] && $collection['productid']) {
+            } else if (!$collection["title"] && isset($collection['productid']) && $collection['productid']) {
 
                 $lastindex = array_key_last($mainData);
                 if (isset($mainData[$lastindex]) && isset($mainData[$lastindex]['product_ids'])) {
@@ -116,7 +116,7 @@ class ImportCsvToShopify implements ShouldQueue
                     $collection['product_ids'][] = $productid;
                 }
                 $mainData[] = $collection;
-            } else if ($collection['title'] && $collection['sort_order'] && !$collection['products'] && !$collection['productid'] && !$collection['rules']) {
+            } else if ($collection['title'] && $collection['sort_order'] && !$collection['products'] && !$collection['rules']) {
                 $mainData[] = $collection;
             } else if (!$collection['title']) {
                 $mainData[] = $collection;
@@ -124,6 +124,7 @@ class ImportCsvToShopify implements ShouldQueue
                 $mainData[] = $collection;
             }
         }
+
         //Maindata to Push collection function
         foreach ($mainData as $rows) {
             if (isset($rows['sort_order']) && $rows['sort_order']) {
@@ -131,10 +132,6 @@ class ImportCsvToShopify implements ShouldQueue
             }
             $validator = Validator::make($rows, [
                 'title' => 'required',
-                'sort_order' => [
-                    'required',
-                    Rule::in(['ALPHA_ASC', 'BEST_SELLING', 'CREATED', 'ALPHA_DESC', 'PRICE_ASC', 'PRICE_DESC', 'CREATED_DESC', 'MANUAL']),
-                ],
             ]);
             $error = json_decode($validator->errors(), true);
 
@@ -147,15 +144,6 @@ class ImportCsvToShopify implements ShouldQueue
                 $this->data->errors = $returnResponse["error"];
                 $this->data->save();
                 return $error['title'];
-            } else if (isset($error['sort_order']) && $error['sort_order']) {
-
-                $isError = true;
-                $returnResponse["error"] = [];
-                $returnResponse["error"][] = $error['sort_order'][0];
-                $returnResponse["is_error"] = true;
-                $this->data->errors = $returnResponse["error"];
-                $this->data->save();
-                return $error['sort_order'];
             }
 
             $result = self::collection($rows, $this->shop);
@@ -180,6 +168,12 @@ class ImportCsvToShopify implements ShouldQueue
 
     public function collection($rows, $shopurl)
     {
+        $sort_order = str::slug($rows['sort_order']);
+        $sororder = self::Sortorder($sort_order);
+
+        $disjunctive = str::slug($rows['disjunctive']);
+        $disjunctives = self::disjunctive($disjunctive);
+
         //Rules Array Manage
         if (isset($rows['rules']) && $rows['rules']) {
             $rule = [];
@@ -211,24 +205,24 @@ class ImportCsvToShopify implements ShouldQueue
         $variable = [
             "input" => [
                 "title" => $rows['title'],
-                'handle' => $rows['handle'],
                 "descriptionHtml" => $rows['body_html'],
-                "sortOrder" => $rows['sort_order'],
+                "sortOrder" => $sororder,
+
             ],
         ];
 
-        if (!array_key_exists('product_ids', $rows)) {
-            $variable['input']['products'] = [
-                $rows['productid'],
-            ];
-        }
+        // if (!array_key_exists('product_ids', $rows)) {
+        //     $variable['input']['products'] = [
+        //         $rows['productid'],
+        //     ];
+        // }
         if (isset($rows['product_ids']) && !$rows['product_ids'] == null) {
             $variable['input']['products'] = array_unique($rows['product_ids']);
         }
 
         if (isset($rule) && !$rule == null) {
             $variable['input']['ruleSet'] = [
-                "appliedDisjunctively" => $rows['disjunctive'],
+                "appliedDisjunctively" => $disjunctives,
                 "rules" => $rule,
             ];
         }
@@ -287,24 +281,21 @@ class ImportCsvToShopify implements ShouldQueue
         //Call a curls function
         $shop = Session::where('shop', $shopurl['shop'])->first();
         $responce = $shop->graph($body);
-
         $usererror = $responce['data']['collectionCreate']['userErrors'];
 
-        foreach($usererror as $error){
-
+        foreach ($usererror as $error) {
             if ($error) {
                 $returnResponse["error"] = [];
-                $returnResponse["error"][] = $rows['title'] .' '. $error['message'];
+                $returnResponse["error"][] = $rows['title'] . ' ' . $error['message'];
                 $returnResponse["is_error"] = true;
                 return $returnResponse;
             }
-
         }
 
-        info($responce);
-        return $responce;
+        $collectionid = $responce['data']['collectionCreate']['collection']['id'];
 
-      
+        // self::publication($collectionid, $shop);
+        return $responce;
 
     }
     public function GetProductId($handle, $shopurl)
@@ -326,8 +317,6 @@ class ImportCsvToShopify implements ShouldQueue
 
         $shop = Session::where('shop', $shopurl['shop'])->first();
         $productid = $shop->graph($body);
-
-        
         $invalidhandle = $productid['data'];
 
         if ($invalidhandle['productByHandle'] == null) {
@@ -341,29 +330,72 @@ class ImportCsvToShopify implements ShouldQueue
         return $pid;
     }
 
-    public function curls($finalquery, $shopurl)
+    public function Sortorder($sort_order)
     {
 
-        $token = Session::where('shop', $shopurl['shop'])->first('access_token');
+        $sortorder = [
+            "product_title_a_z" => "ALPHA_ASC",
+            "best_selling" => "BEST_SELLING",
+            "oldest" => "CREATED",
+            "product_title_z_a" => "ALPHA_DESC",
+            "lowest_price" => "PRICE_ASC",
+            "highest_price" => "PRICE_DESC",
+            "newest" => "CREATED_DESC",
+            "manually" => "MANUAL",
+        ];
 
-        $ch = curl_init();
+        $value = Str::slug($sort_order, "_");
 
-        curl_setopt($ch, CURLOPT_URL, 'https://' . $shopurl['shop'] . '/admin/api/2022-10/graphql.json');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($finalquery));
-
-        $headers = array();
-        $headers[] = 'Content-Type: application/json';
-        $headers[] = 'X-Shopify-Access-Token: ' . $token->access_token . '';
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
-        $result = curl_exec($ch);
-        if (curl_errno($ch)) {
-            echo 'Error:' . curl_error($ch);
+        if (isset($sortorder[$value])) {
+            return $sortorder[$value];
+        } else {
+            return "CREATED";
         }
-        curl_close($ch);
-        return $result;
     }
+
+    public function disjunctive($disjunctive)
+    {
+        $coloum = [
+            "all" => false,
+            "any" => true,
+        ];
+
+        $value = Str::slug($disjunctive, "_");
+
+        if (isset($coloum[$value])) {
+            return $coloum[$value];
+        } else {
+            return "CREATED";
+        }
+    }
+
+    // public function publication($collectionid, $shop)
+    // {
+
+    //     $variable = [
+    //         "id" => $collectionid,
+    //         "input" => [
+    //             ["publicationId" => "gid://shopify/Publication/75112448305"],
+    //         ],
+    //     ];
+
+    //     $query = 'mutation publishablePublish($id: ID!, $input: [PublicationInput!]!) {
+    //         publishablePublish(id: $id, input: $input) {
+    //           userErrors {
+    //             field
+    //             message
+    //           }
+    //         }
+    //       }';
+
+    //     $body = [
+    //         "query" => $query,
+    //         "variables" => $variable,
+    //     ];
+
+    //     $responce = $shop->graph($body);
+
+    //     info($responce);
+    // }
 
 }

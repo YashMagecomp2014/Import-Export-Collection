@@ -31,7 +31,9 @@
         "react": "^16.14.0",
         "react-bootstrap": "^2.5.0",
         "react-dom": "^16.14.0",
+        "react-redux": "^8.0.5",
         "react-router-dom": "^5.2.0",
+        "redux": "^4.2.0",
         "sweetalert2": "^11.6.9"
     },
     "devDependencies": {

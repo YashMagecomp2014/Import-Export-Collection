@@ -8,10 +8,16 @@ import GetManualcollection from './GetManualcollection';
 import { Link } from "react-router-dom";
 import { GlobalAPIcall } from "../config/ApiUtils"
 import { Card, Tabs } from '@shopify/polaris';
+import { useAppBridge } from "@shopify/app-bridge-react";
+import { Fullscreen } from "@shopify/app-bridge/actions";
+import { useDispatch, useSelector } from "react-redux";
+import { setRedirectIndex } from "../redux/rootReducer";
 
 function CollectionList() {
+  const redirectIndex = useSelector((state) => state.redirectHistory);
   const [collections, setUsers] = useState([]);
   const [selected, setSelected] = useState(0);
+  const dispatch = useDispatch();
 
   const fetchData = async () => {
     var res = await GlobalAPIcall('GET', '/import');
@@ -23,9 +29,21 @@ function CollectionList() {
     [],
   );
 
+  const app = useAppBridge();
+  const fullscreen = Fullscreen.create(app);
+  // Call the `ENTER` action to put the app in full-screen mode
+  useEffect(() => {
+    if(redirectIndex) {
+      setSelected(3);
+      dispatch(setRedirectIndex(false));
+    }
+    console.log("redirectIndex", redirectIndex);
+  }, [redirectIndex]);
+
   const setselectvalue = () => {
     setSelected(3);
   }
+
 
   const component = [
     <GetAllcollection setselectvalue={setselectvalue} />,
@@ -69,11 +87,9 @@ function CollectionList() {
 
   return (
     <>
-      <Dropdown setselectvalue={setselectvalue}/>
-      <div className="container" id='container2'>
+      {/* <Dropdown setselectvalue={setselectvalue}/> */}
+      <div className="container-fluid" id='container2'>
         <div className="row" id='row2'>
-          <h1 id="collection">Collections</h1>
-
           <Card>
             <Tabs tabs={tabs} selected={selected} onSelect={handleTabChange}>
               <Card.Section >

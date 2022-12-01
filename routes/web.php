@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use Shopify\Auth\OAuth;
 use Shopify\Auth\Session as AuthSession;
 use Shopify\Clients\HttpHeaders;
@@ -24,7 +25,7 @@ use Shopify\Webhooks\Topics;
 | routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
 |
-*/
+ */
 
 Route::fallback(function (Request $request) {
     $shop = Utils::sanitizeShopDomain($request->query('shop'));
@@ -34,11 +35,11 @@ Route::fallback(function (Request $request) {
         return view('react', [
             'shop' => $shop,
             'host' => $host,
-            'apiKey' => Context::$API_KEY
+            'apiKey' => Context::$API_KEY,
         ]);
     }
     return redirect("/login?shop=$shop");
-});
+})->middleware('cus.header');
 
 Route::get('/charge-handle', [ChargeController::class, "chargeHandle"])->name('active.charge');
 
@@ -129,8 +130,24 @@ Route::post('/webhooks', function (Request $request) {
             Log::error("Failed to process '$topic' webhook: {$response->getErrorMessage()}");
             return response()->json(['message' => "Failed to process '$topic' webhook"], 500);
         }
-    } catch (\Exception $e) {
+    } catch (\Exception$e) {
         Log::error("Got an exception when handling '$topic' webhook: {$e->getMessage()}");
         return response()->json(['message' => "Got an exception when handling '$topic' webhook"], 500);
     }
+});
+
+Route::prefix('/gdpr')->middleware('custom.auth.webhook')->group(function () {
+
+    Route::post("/customers/data_request", function (Request $request) {
+        return response()->json(['massage' => 'We are not use Customer data'])->status(200);
+    });
+
+    Route::post("/customers/redact", function (Request $request) {
+        return response()->json(['massage' => 'We are not use Customer data'])->status(200);
+    });
+
+    Route::post("/shop/redact", function (Request $request) {
+        return response()->json(['massage' => 'We remove all data of shop'])->status(200);
+    });
+
 });

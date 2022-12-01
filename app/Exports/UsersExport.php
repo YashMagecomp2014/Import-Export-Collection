@@ -5,6 +5,7 @@ use App\Helpers\CommonHelpers;
 use App\Models\Session;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Illuminate\Support\Str;
 
 class UsersExport implements FromCollection, WithHeadings
 {
@@ -33,7 +34,6 @@ class UsersExport implements FromCollection, WithHeadings
             $arrofcsv[] = array(
                 "title" => '',
                 'Body (HTML)' => '',
-                "handle" => '',
                 'Rules' => '',
                 "products" => '',
                 'Disjunctive' => '',
@@ -49,14 +49,17 @@ class UsersExport implements FromCollection, WithHeadings
         foreach ($response as $key => $data) {
             $collection = $data;
 
+            $sort_order = $collection['sortOrder'];
+            
+            $sororder = self::Sortorder($sort_order);
+            
             $array = array(
                 "title" => $collection['title'],
                 'Body (HTML)' => $collection['descriptionHtml'],
-                "handle" => $collection['handle'],
-                'Rules' => '',
+                'rules' => '',
                 "products" => '',
                 'Disjunctive' => '',
-                'Sort Order' => $collection['sortOrder'],
+                'Sort Order' => $sororder,
                 'Template Suffix' => '',
                 'Published' => 'true',
                 'SEO Title' => $collection['seo']['title'],
@@ -77,19 +80,40 @@ class UsersExport implements FromCollection, WithHeadings
     public function headings(): array
     {
         return [
-            'Title',
-            'Body (HTML)',
-            'Handle',
-            'Rules',
+            'Collection',
+            'Description',
+            'Conditions',
             'Products',
-            'Disjunctive',
+            'Products must match',
             'Sort Order',
             'Template Suffix',
             'Published',
             'SEO Title',
             'SEO Description',
-            'Image',
-            'productid',
+            'Collection Image',
         ];
+    }
+
+    public function Sortorder($sort_order)
+    {
+
+        $sortorder = [
+            "alpha_asc" => "Product Title A-Z" ,
+            "best_selling" => "Best Selling" ,
+            "created" => "Oldest" ,
+            "alpha_desc" => "Product Title Z-A" ,
+            "price_asc" => "Lowest Price" ,
+            "price_desc" => "Highest Price" ,
+            "created_desc" => "Newest" ,
+            "manual" => "Manually" ,
+        ];
+
+        $value = Str::slug($sort_order, "_");
+
+        if (isset($sortorder[$value])) {
+            return $sortorder[$value];
+        } else {
+            return "CREATED";
+        }
     }
 }

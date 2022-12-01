@@ -61,7 +61,8 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-
+        'cus.header' => \App\Http\Middleware\FrameHeadersMiddleware::class,
         'shopify.auth' => \App\Http\Middleware\EnsureShopifySession::class,
+        'custom.auth.webhook' => \App\Http\Middleware\CustomWebhookMiddleware::class,
     ];
 }

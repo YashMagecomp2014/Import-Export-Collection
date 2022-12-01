@@ -5,6 +5,7 @@ use App\Helpers\CommonHelpers;
 use App\Models\Session;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Illuminate\Support\Str;
 
 class GetCollectionWithHandle implements FromCollection, WithHeadings
 {
@@ -34,7 +35,6 @@ class GetCollectionWithHandle implements FromCollection, WithHeadings
             $arrofcsv[] = array(
                 "title" => '',
                 'Body (HTML)' => '',
-                "handle" => '',
                 'Rules' => '',
                 "products" => '',
                 'Disjunctive' => '',
@@ -46,13 +46,37 @@ class GetCollectionWithHandle implements FromCollection, WithHeadings
 
             );
 
-            info('hey');
         }
 
         // $data = $collections;
         foreach ($response as $data) {
 
             $products = $data['products']['edges'];
+
+            $sort_order = $data['sortOrder'];
+            
+            $sororder = self::Sortorder($sort_order);
+
+
+            $rule = '';
+            $Disjunctive = '';
+            if (isset($data['ruleSet']) && $data['ruleSet']) {
+                $rules = $data['ruleSet']['rules'];
+
+                $Disjunctives = $data['ruleSet']['appliedDisjunctively'];
+                
+                if($Disjunctives == 1){
+                    $Disjunctive = 'any';
+                }else{
+                    $Disjunctive = 'all';
+                }
+               
+                foreach ($rules as $value) {
+
+                    $rule .= $value['column'] . ' ' . $value['relation'] . ' ' . $value['condition'] . ',';
+
+                }
+            }
 
             foreach ($products as $key => $product) {
 
@@ -62,11 +86,10 @@ class GetCollectionWithHandle implements FromCollection, WithHeadings
                     $array = array(
                         "title" => $data['title'],
                         'Body (HTML)' => $data['descriptionHtml'],
-                        "handle" => $data['handle'],
-                        'Rules' => '',
+                        'Rules' => $rule,
                         "products" => $handle,
-                        'Disjunctive' => '',
-                        'Sort Order' => $data['sortOrder'],
+                        'Disjunctive' => $Disjunctive,
+                        'Sort Order' => $sororder,
                         'Template Suffix' => '',
                         'Published' => 'true',
                         'SEO Title' => $data['seo']['title'],
@@ -83,7 +106,6 @@ class GetCollectionWithHandle implements FromCollection, WithHeadings
                     $arrofcsv[] = array(
                         "title" => '',
                         'Body (HTML)' => '',
-                        "handle" => '',
                         'Rules' => '',
                         "products" => $handle,
                         'Disjunctive' => '',
@@ -100,8 +122,6 @@ class GetCollectionWithHandle implements FromCollection, WithHeadings
 
         }
 
-        
-
         $result = collect($arrofcsv);
 
         return $result;
@@ -110,20 +130,40 @@ class GetCollectionWithHandle implements FromCollection, WithHeadings
     {
         return [
 
-            'Title',
-            'Body (HTML)',
-            'Handle',
-            'Rules',
+            'Collection',
+            'Description',
+            'Conditions',
             'Products',
-            'Disjunctive',
+            'Products must match',
             'Sort Order',
             'Template Suffix',
             'Published',
             'SEO Title',
             'SEO Description',
-            'Image',
-            'productid',
+            'Collection Image',
 
         ];
+    }
+    public function Sortorder($sort_order)
+    {
+
+        $sortorder = [
+            "alpha_asc" => "Product Title A-Z" ,
+            "best_selling" => "Best Selling" ,
+            "created" => "Oldest" ,
+            "alpha_desc" => "Product Title Z-A" ,
+            "price_asc" => "Lowest Price" ,
+            "price_desc" => "Highest Price" ,
+            "created_desc" => "Newest" ,
+            "manual" => "Manually" ,
+        ];
+
+        $value = Str::slug($sort_order, "_");
+
+        if (isset($sortorder[$value])) {
+            return $sortorder[$value];
+        } else {
+            return "CREATED";
+        }
     }
 }

@@ -14,6 +14,10 @@ class Collection extends Model
     protected $fillable = [
         'id',
         'file',
+        'path',
+        'type',
+        'errors',
+        'shop',
         'created_at',
         'updated_at',       
     ];

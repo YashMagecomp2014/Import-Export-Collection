@@ -30,9 +30,10 @@ class CollectionImportController extends Controller
 
         // read file
         $collectionFileData = Excel::ToCollection(new UsersImport, $request->file('file'));
-
         $collections = $collectionFileData->toArray();
 
+        // print_r($collections);
+        // exit;
         // file is empty check
         if (!$collections[0]) {
             return response()->json([
@@ -46,7 +47,7 @@ class CollectionImportController extends Controller
 
         // Collumn validation
         $excel_collumn = array_keys($collections[0][0]);
-        $final_collumn = ["title", "body_html", "handle", "image", "rules", "products", "disjunctive", "sort_order", "template_suffix", "published", "seo_title", "seo_description","productid"];
+        $final_collumn = ["title", "body_html", "image", "rules", "products", "disjunctive", "sort_order", "template_suffix", "published", "seo_title", "seo_description"];
         $has_change = array_diff($final_collumn, $excel_collumn);
         if (count($has_change) > 0) {
             return response()->json([
@@ -78,9 +79,9 @@ class CollectionImportController extends Controller
         $data = new Collection();
         $file = $request->file('file');
         $filename = $time . $file->getClientOriginalName();
-        $path = $file->move(public_path('public/file/'.$shopurl), $filename);
+        $path = $file->move(storage_path('app/public/'.$shopurl), $filename);
         $data['file'] = $filename;
-        $data['path'] = 'public/file/' . $shopurl .'/'. $filename;
+        $data['path'] = 'storage/' . $shopurl .'/'. $filename;
         $data['type'] = "Import file";
         $data->shop = $shopurl;
         $data->save();
@@ -94,6 +95,5 @@ class CollectionImportController extends Controller
                 "success" => "Csv uploaded successfully",
             ],
         ]);
-
     }
 }

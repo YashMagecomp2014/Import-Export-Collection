@@ -1,6 +1,7 @@
 <?php
 namespace App\Exports;
 
+use App\Helpers\CommonHelpers;
 use App\Models\Session;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -21,36 +22,40 @@ class GetAllProduct implements FromCollection, WithHeadings
     public function collection()
     {
 
-        $query = 'query {
-            products(first: 200) {
-              edges {
-                cursor
-                node {
-                  id
-                  title
-                  descriptionHtml
-                  vendor
-                  productType
-                  handle
-                  tags
-                  priceRange {
-                    maxVariantPrice {
-                      amount
-                    }
-                  }
-                }
-              }
-            }
-          }
-          ';
+        // $query = 'query {
+        //     products(first: 200) {
+        //       edges {
+        //         cursor
+        //         node {
+        //           id
+        //           title
+        //           descriptionHtml
+        //           vendor
+        //           productType
+        //           handle
+        //           tags
+        //           priceRange {
+        //             maxVariantPrice {
+        //               amount
+        //             }
+        //           }
+        //         }
+        //       }
+        //     }
+        //   }
+        //   ';
 
-        $body = [
-            "query" => $query,
-        ];
+        // $body = [
+        //     "query" => $query,
+        // ];
 
         $shop = Session::where('shop', $this->shopurl)->first();
-        $response = $shop->graph($body);
-        $products = $response['data']['products']['edges'];
+        $products = CommonHelpers::getAllProducts($shop);
+
+        // print_r($products);
+        // exit;
+        
+        
 
         if (!$products) {
             $arrofcsv[] = array(
@@ -75,7 +80,7 @@ class GetAllProduct implements FromCollection, WithHeadings
         $data = $products;
         foreach ($products as $data) {
 
-            $product = $data['node'];
+            $product = $data;
 
             // $variant = $product['variants']['edges'];
 
