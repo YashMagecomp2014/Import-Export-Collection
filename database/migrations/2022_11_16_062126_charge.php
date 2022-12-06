@@ -17,6 +17,8 @@ class Charge extends Migration
             $table->id();
             $table->string('charge_id')->nullable();
             $table->string('shop')->nullable();
+            $table->string('type')->nullable();
+            $table->string('plan')->nullable();
             $table->timestamps();
         });
     }

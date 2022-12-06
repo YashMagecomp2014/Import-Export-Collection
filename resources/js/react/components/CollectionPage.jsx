@@ -12,9 +12,14 @@ import { Banner } from '@shopify/polaris';
 import PopUp from './PopUp';
 import Swal from 'sweetalert2'
 import Dropdown from './Dropdown';
+import { useDispatch } from "react-redux";
+import { enableLoadHistory, setRedirectIndex } from "../redux/rootReducer";
+import { useAppBridge } from '@shopify/app-bridge-react';
 
 function CollectionPage({ fetchData }) {
 
+  const dispatch = useDispatch();
+  const app = useAppBridge();
   const [file, setFile] = useState("");
   const [progress, setProgress] = useState(false);
   const [active, setActive] = useState(false);
@@ -66,6 +71,8 @@ function CollectionPage({ fetchData }) {
         })
       }
 
+      dispatch(enableLoadHistory());
+      dispatch(setRedirectIndex(true));
       fetchData();
       if (res.status === 200) {
         setFile("");
@@ -82,14 +89,13 @@ function CollectionPage({ fetchData }) {
   };
 
   return (
-
-    <div className="col-lg-4">
+    <>
       <div className='row'>
         <div className="col-md-4">
           <a className='download' href='public/Rules/Template.csv'>Download&nbsp;Template</a><br />
         </div>
-        <div className="col-md-6"></div>
-        <div className="col-md-2">
+        <div className="col-md-5"></div>
+        <div className="col-md-3">
           <a className='download' href='public/Rules/Rules.csv'>Rules</a>
         </div>
       </div>
@@ -120,7 +126,7 @@ function CollectionPage({ fetchData }) {
           </form>
         </div>
       </div>
-    </div>
+    </>
 
   );
 }

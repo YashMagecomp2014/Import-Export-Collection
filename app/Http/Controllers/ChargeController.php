@@ -14,10 +14,11 @@ class ChargeController extends Controller
             $data = new Charge();
             $data->shop = $request->shop;
             $data->charge_id = $request->charge_id;
+            $data->plan = $request->plan;
             $data->save();
             $shop = Session::where("shop", $request->shop)->first();
             if($shop) {
-                $shop->plan = 1;
+                $shop->plan = $request->plan;
                 $shop->save();
             }
             return redirect()->to('/login?shop=' . $request->shop);
@@ -29,7 +30,7 @@ class ChargeController extends Controller
     {
         $shopurl = $request->header('url');
 
-        $chargedata = Charge::where('shop', $shopurl)->first('charge_id');
+        $chargedata = Charge::where('shop', $shopurl)->first();
 
         if ($chargedata) {
             return $chargedata;

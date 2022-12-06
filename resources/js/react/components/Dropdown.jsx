@@ -71,7 +71,8 @@ function Dropdown({ setselectvalue }) {
       var res = await GlobalAPIcall('GET', '/GetAllProduct');
       setUsers(res);
       setActive(false);
-      setselectvalue();
+      dispatch(enableLoadHistory());
+      dispatch(setRedirectIndex(true));
 
     }
     else if (selectvalue == 'export_All_Product_Not_Any_Collection') {
@@ -79,7 +80,8 @@ function Dropdown({ setselectvalue }) {
       var res = await GlobalAPIcall('GET', '/GetAllProductNotInAnyCollection');
       setUsers(res);
       setActive(false);
-      setselectvalue();
+      dispatch(enableLoadHistory());
+      dispatch(setRedirectIndex(true));
 
     }
 

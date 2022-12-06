@@ -39,6 +39,7 @@ function HistoryList() {
     fetchData()
     setProgress(false);
     setUsers();
+    setRowSelection([]);
 
   }
 
@@ -105,70 +106,58 @@ function HistoryList() {
 
   return (
     <>
-      <div className="row">
-        <h1 id="collection">Collections</h1>
-        <div className="col-md-8">
-          {progress && <Spinner accessibilityLabel="Spinner example" size="large" />}
-          <MaterialReactTable
-            columns={columns}
-            data={collections ?? []}
-            enableRowSelection={true}
-            getRowId={(row) => row.id}
-            onRowSelectionChange={setRowSelection}
-            state={{ rowSelection }}
-            enableGlobalFilter={false}
-            enableColumnFilter={false}
-            enablePinning
-            renderTopToolbarCustomActions={() => (
-              <Box sx={{ display: 'flex', gap: '1rem' }}>
-                <Tooltip arrow title="Refresh Data">
-                  <IconButton onClick={onclick}>
-                    <RefreshIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip arrow title="deleteHistory">
-                  <IconButton onClick={deleteHistory}>
-                    <Delete style={{ color: 'red' }} />
-                  </IconButton>
-                </Tooltip>
-              </Box>
-            )}
-            muiTableHeadCellProps={{
-              //easier way to create media queries, no useMediaQuery hook needed.
-              sx: {
-                fontSize: {
-                  xs: '14px',
-                  sm: '15px',
-                  md: '16px',
-                  lg: '17px',
-                  xl: '18px',
-                },
-              },
-            }}
-            muiTableBodyCellProps={{
-              //easier way to create media queries, no useMediaQuery hook needed.
-              sx: {
-                fontSize: {
-                  xs: '10px',
-                  sm: '11px',
-                  md: '12px',
-                  lg: '13px',
-                  xl: '14px',
-                },
-              },
+      {progress && <Spinner accessibilityLabel="Spinner example" size="large" />}
+      <MaterialReactTable
+        columns={columns}
+        data={collections ?? []}
+        enableRowSelection={true}
+        getRowId={(row) => row.id}
+        onRowSelectionChange={setRowSelection}
+        state={{ rowSelection }}
+        enableGlobalFilter={false}
+        enableColumnFilter={false}
+        enablePinning
+        renderTopToolbarCustomActions={() => (
+          <Box sx={{ display: 'flex', gap: '1rem' }}>
+            <Tooltip arrow title="Refresh Data">
+              <IconButton onClick={onclick}>
+                <RefreshIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip arrow title="deleteHistory">
+              <IconButton onClick={deleteHistory}>
+                <Delete style={{ color: 'red' }} />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        )}
+        muiTableHeadCellProps={{
+          //easier way to create media queries, no useMediaQuery hook needed.
+          sx: {
+            fontSize: {
+              xs: '14px',
+              sm: '15px',
+              md: '16px',
+              lg: '17px',
+              xl: '18px',
+            },
+          },
+        }}
+        muiTableBodyCellProps={{
+          //easier way to create media queries, no useMediaQuery hook needed.
+          sx: {
+            fontSize: {
+              xs: '10px',
+              sm: '11px',
+              md: '12px',
+              lg: '13px',
+              xl: '14px',
+            },
+          },
 
 
-            }}
-
-
-
-          />
-        </div>
-
-        {/* <Dropdown setselectvalue={setselectvalue}/> */}
-        <CollectionPage fetchData={fetchData} />
-
-      </div>
+        }}
+      />
     </>
   );
 }

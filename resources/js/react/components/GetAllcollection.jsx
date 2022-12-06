@@ -131,20 +131,6 @@ function GetAllcollection({ setselectvalue }) {
 
   return (
     <>
-
-
-      <div className="row">
-        <div className="col-md-12" id="HeadingAction">
-          <h1 id="collection">Collections</h1>
-
-          <div className="selectaction">
-
-          </div>
-        </div>
-      </div>
-      <div className="row">
-
-        <div className="col-md-8">
           {progress && <Spinner accessibilityLabel="Spinner example" size="large" />}
           <MaterialReactTable
             columns={columns}
@@ -213,14 +199,7 @@ function GetAllcollection({ setselectvalue }) {
                 },
               },
             }}
-          />
-        </div>
-
-        {/* <Dropdown setselectvalue={setselectvalue}/> */}
-        <CollectionPage />
-
-      </div>
-      {toastactive && <Frame><Toast content="Export File Started" onDismiss={tosttoggleActive} /></Frame>}
+          />       
     </>
   );
 }

@@ -1,3 +1,3 @@
-Title,Body (HTML),Handle,Image,Rules,Products,Disjunctive,Sort Order,Template Suffix,Published,SEO Title,SEO Description,productid
-Collection Title,//Add Description,Add a Handle if you want otherwise leave blank,,Add Rules like(variant_price less_than 10000),Add Product Handle,// If you want to all or any Condition to set Using False or True,"Sort order must be one of: “Product Title A-Z”, “Best Selling”, “Oldest”, “Product Title Z-A”, “Lowest Price”, “Highest Price”, “Newest”, “Manually”
-",,,//Add SEO-Title,//Add SEO-Description,
+Collection,Description,Conditions,Products,Products must match,Sort Order,Theme template,Published,SEO Title,SEO Description,Collection Image
+Collection Title,//Add Description,Add Rules like(variant_price less_than 10000),Add Product Handle,// If you want to all or any Condition to set Using all or any,"Sort order must be one of: “Product Title A-Z”, “Best Selling”, “Oldest”, “Product Title Z-A”, “Lowest Price”, “Highest Price”, “Newest”, “Manually”
+",,,//Add SEO-Title,//Add SEO-Description,//Add Collection Image

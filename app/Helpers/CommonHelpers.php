@@ -187,15 +187,14 @@ class CommonHelpers
                         foreach ($nodes as $index => $node) {
                             // if (isset($node["productsCount"]) && (int) $node["productsCount"] > 10) {
 
-                            // print_r($node);
-                            // exit;
-                            $id = $node['id'];
-                            $productdata = self::GetCollection($id);
-                            $body = [
-                                "query" => $productdata,
-                            ];
-                            $responses = $shop->graph($body);
-                            $nodes[$index]['collections'] = $responses['data']['product']['collections'];
+                           
+                            // $id = $node['id'];
+                            // $productdata = self::GetCollection($id);
+                            // $body = [
+                            //     "query" => $productdata,
+                            // ];
+                            // $responses = $shop->graph($body);
+                            $nodes[$index]['collections'] = $node['collections'];
                         }
                     }
                     $products = array_merge($product, $nodes);
@@ -219,7 +218,7 @@ class CommonHelpers
         if ($isFree) {
             $first = 10;
         } else {
-            $first = 250;
+            $first = 180;
         }
         $query = '{
           products(first: ' . $first . ') {
@@ -233,6 +232,13 @@ class CommonHelpers
                 productType
                 handle
                 tags
+                collections (first: 1){
+                  edges {
+                    node {
+                      id
+                    }
+                  }
+                }
                 priceRange {
                   maxVariantPrice {
                     amount
