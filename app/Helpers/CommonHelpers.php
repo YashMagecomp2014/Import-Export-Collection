@@ -18,7 +18,11 @@ class CommonHelpers
     {
         $cursor = "";
         $collections = [];
-        $isFree = $shop->plan ? false : true;
+        if (!$shop->plan) {
+            $isFree = $shop->is_free;
+        } else {
+            $isFree = $shop->plan;
+        }
 
         try {
             do {
@@ -80,10 +84,15 @@ class CommonHelpers
 
     public static function getProductHandle($id, $isFree)
     {
-        if ($isFree) {
-            $first = 10;
-        } else {
+        info($isFree);
+        if ($isFree == 1) {
+            $first = 5;
+        } else if ($isFree == 2) {
+            $first = 50;
+        } else if ($isFree == 3) {
             $first = 250;
+        } else {
+            $first = 0;
         }
 
         // $after = ', after: "' . $cursor . '"';
@@ -108,10 +117,15 @@ class CommonHelpers
     }
     public static function getCollectionQuery($withProduct, $cursor = "", $isFree = false)
     {
-        if ($isFree) {
-            $first = 10;
+        info($isFree);
+        if ($isFree == 1) {
+            $first = 5;
+        } else if ($isFree == 2) {
+            $first = 50;
+        } else if ($isFree == 3) {
+            $first = 250;
         } else {
-            $first = 180;
+            $first = 0;
         }
         $after = "";
         if ($cursor) {
@@ -157,7 +171,11 @@ class CommonHelpers
     {
         $cursor = "";
         $product = [];
-        $isFree = $shop->plan ? false : true;
+        if (!$shop->plan) {
+            $isFree = $shop->is_free;
+        } else {
+            $isFree = $shop->plan;
+        }
 
         try {
             do {
@@ -187,7 +205,6 @@ class CommonHelpers
                         foreach ($nodes as $index => $node) {
                             // if (isset($node["productsCount"]) && (int) $node["productsCount"] > 10) {
 
-                           
                             // $id = $node['id'];
                             // $productdata = self::GetCollection($id);
                             // $body = [
@@ -215,10 +232,15 @@ class CommonHelpers
     public static function getProductsQuery($cursor, $withCollection, $isFree)
     {
 
-        if ($isFree) {
-            $first = 10;
+        info($isFree);
+        if ($isFree == 1) {
+            $first = 5;
+        } else if ($isFree == 2) {
+            $first = 50;
+        } else if ($isFree == 3) {
+            $first = 250;
         } else {
-            $first = 180;
+            $first = 1;
         }
         $query = '{
           products(first: ' . $first . ') {

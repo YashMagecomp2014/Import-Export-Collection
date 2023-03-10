@@ -1,14 +1,14 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 
 namespace App\Lib;
 
 use Exception;
+use Illuminate\Support\Facades\Log;
 use Shopify\Auth\AccessTokenOnlineUserInfo;
 use Shopify\Auth\Session;
 use Shopify\Auth\SessionStorage;
-use Illuminate\Support\Facades\Log;
 
 class DbSessionStorage implements SessionStorage
 {
@@ -34,7 +34,7 @@ class DbSessionStorage implements SessionStorage
             }
             if ($dbSession->user_id) {
                 $onlineAccessInfo = new AccessTokenOnlineUserInfo(
-                    (int)$dbSession->user_id,
+                    (int) $dbSession->user_id,
                     $dbSession->user_first_name,
                     $dbSession->user_last_name,
                     $dbSession->user_email,

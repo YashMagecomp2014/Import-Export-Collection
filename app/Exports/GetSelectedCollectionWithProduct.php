@@ -103,6 +103,27 @@ class GetSelectedCollectionWithProduct implements FromCollection, WithHeadings
 
             $product = $collection['products']['edges'];
 
+            if (!$product) {
+                $array = array(
+                    "title" => $collection['title'],
+                    'Body (HTML)' => $collection['descriptionHtml'],
+                    'Rules' => $rule,
+                    "products" => '',
+                    'Disjunctive' => $Disjunctive,
+                    'Sort Order' => $sororder,
+                    'Template Suffix' => '',
+                    'Published' => 'true',
+                    'SEO Title' => $collection['seo']['title'],
+                    'SEO Description' => $collection['seo']['description'],
+
+                );
+                if (isset($collection['image']['src']) && $collection['image']['src']) {
+                    $array['image'] = $collection['image']['src'];
+                }
+                $arrofcsv[] = $array;
+
+            }
+
             foreach ($product as $key => $producthandle) {
 
                 $handle = $producthandle['node'];

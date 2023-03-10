@@ -13,7 +13,7 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class CollectionImportController extends Controller
 {
-    protected $FREE_COLLECTION_COUNT = 10;
+    protected $FREE_COLLECTION_COUNT = 5;
 
     public function fileImport(Request $request)
     {
@@ -32,8 +32,6 @@ class CollectionImportController extends Controller
         $collectionFileData = Excel::ToCollection(new UsersImport, $request->file('file'));
         $collections = $collectionFileData->toArray();
 
-        // print_r($collections);
-        // exit;
         // file is empty check
         if (!$collections[0]) {
             return response()->json([
@@ -47,7 +45,7 @@ class CollectionImportController extends Controller
 
         // Collumn validation
         $excel_collumn = array_keys($collections[0][0]);
-        $final_collumn = ["title", "body_html", "image", "rules", "products", "disjunctive", "sort_order", "template_suffix", "published", "seo_title", "seo_description"];
+        $final_collumn = ["title", "body_html", "image", "rules", "products", "disjunctive", "sort_order", "seo_title", "seo_description"];
         $has_change = array_diff($final_collumn, $excel_collumn);
         if (count($has_change) > 0) {
             return response()->json([

@@ -294,3 +294,29 @@
     border-radius: 30px 30px 30px 30px;
     padding: 5%;
 }
+.Polaris-Button{
+    border: none;
+    min-height: 0;
+    padding: 9px;
+}
+.css-16253fi-MuiTablePagination-root .MuiTablePagination-selectLabel{
+    font-size: 15px;
+}
+.css-6vypie-MuiInputBase-root-MuiTablePagination-select{
+    font-size: 15px !important;
+}
+.css-16253fi-MuiTablePagination-root .MuiTablePagination-displayedRows{
+    font-size: 15px;
+}
+.css-xzqrfm-MuiTypography-root{
+    font-size: 17px !important;
+}
+.css-an1zfc{
+    justify-content: center !important;
+}
+.css-odabkm-MuiTableCell-root{
+    text-align: center !important;
+}
+.css-fxfe2m-MuiTableCell-root{
+    text-align: center !important;
+}

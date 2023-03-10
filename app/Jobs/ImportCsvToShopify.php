@@ -171,6 +171,9 @@ class ImportCsvToShopify implements ShouldQueue
         $sort_order = str::slug($rows['sort_order']);
         $sororder = self::Sortorder($sort_order);
 
+        if(!$rows['disjunctive']){
+            $rows['disjunctive'] == 'all';
+        }
         $disjunctive = str::slug($rows['disjunctive']);
         $disjunctives = self::disjunctive($disjunctive);
 

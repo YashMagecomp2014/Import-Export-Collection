@@ -22,8 +22,6 @@ class GetSelectedCollections implements FromCollection, WithHeadings
 
     public function collection()
     {
-
-        // print_r($this->id)
         $query = 'query {
             nodes(ids: [' . $this->id . ']) {
               id

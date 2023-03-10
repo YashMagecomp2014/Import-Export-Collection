@@ -14,6 +14,8 @@ class Charge extends Model
         'id',
         'charge_id',
         'shop',
+        'type',
+        'plan',
         'created_at',
         'updated_at',       
     ];

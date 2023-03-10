@@ -10,6 +10,7 @@ class ChargeController extends Controller
 {
     public function chargeHandle(Request $request)
     {
+        info($request->all());
         if ($request->charge_id) {
             $data = new Charge();
             $data->shop = $request->shop;
@@ -17,10 +18,16 @@ class ChargeController extends Controller
             $data->plan = $request->plan;
             $data->save();
             $shop = Session::where("shop", $request->shop)->first();
-            if($shop) {
-                $shop->plan = $request->plan;
-                $shop->save();
+            info($shop);
+            info($request->plan);
+
+            $shop->plan = $request->plan;
+            $shop->save();
+
+            if($request->plan == 1){
+                return redirect()->back();
             }
+
             return redirect()->to('/login?shop=' . $request->shop);
         } else {
             return redirect()->to('/login?shop=' . $request->shop);
@@ -30,7 +37,7 @@ class ChargeController extends Controller
     {
         $shopurl = $request->header('url');
 
-        $chargedata = Charge::where('shop', $shopurl)->first();
+        $chargedata = Session::where('shop', $shopurl)->first();
 
         if ($chargedata) {
             return $chargedata;
@@ -40,4 +47,6 @@ class ChargeController extends Controller
             ];
         }
     }
+
+    
 }

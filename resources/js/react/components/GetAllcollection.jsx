@@ -16,14 +16,13 @@ import Swal from 'sweetalert2'
 import Dropdown from "./Dropdown";
 
 
-function GetAllcollection({ setselectvalue }) {
+function GetAllcollection({ setselectvalue, options }) {
   const [collections, setUsers] = useState([]);
   const [rowSelection, setRowSelection] = useState([]);
   const [active, setActive] = useState(false);
   const [progress, setProgress] = useState(true);
   const [toastactive, setToastActive] = useState(false);
-  const [Action, setAction] = useState(false);
-
+  
   const toggleActive = useCallback(() => setActive((active) => !active), []);
 
   const tosttoggleActive = () => {
@@ -102,6 +101,7 @@ function GetAllcollection({ setselectvalue }) {
       {
         accessorKey: 'productsCount',
         header: 'Number of Products',
+        
       },
       //end
     ],
@@ -110,23 +110,26 @@ function GetAllcollection({ setselectvalue }) {
 
 
   const fetchData = async () => {
-    var res = await GlobalAPIcall('GET', '/getallcollection');
+    if(options == 'manual') {
+      setProgress(true);
+      var res = await GlobalAPIcall('GET', '/getcustomcollection');
+    } else if(options == 'automatic') {
+      setProgress(true);
+      var res = await GlobalAPIcall('GET', '/getsmartcollection');
+    } else {
+      setProgress(true);
+      var res = await GlobalAPIcall('GET', '/getallcollection');
+    }
     setUsers(res);
     setProgress(false);
   }
 
   useEffect(() => {
     fetchData()
-  }, [])
+  }, [options])
 
   useEffect(() => {
-    //do something when the row selection changes...
-    console.info({ rowSelection });
-    if(Object.keys(rowSelection).length > 0){
-      setAction(true);
-    }else{
-      setAction(false);
-    }
+    
   }, [rowSelection]);
 
   return (
@@ -147,8 +150,8 @@ function GetAllcollection({ setselectvalue }) {
                     <RefreshIcon />
                   </IconButton>
                 </Tooltip>
-                {Action && <Tooltip>
-                  <IconButton>
+               
+                  
                     <Popover
                       active={active}
                       activator={activator}
@@ -160,19 +163,19 @@ function GetAllcollection({ setselectvalue }) {
                           actionRole="menuitem"
                           items={[
                             {
-                              content: 'Get All Collection',
+                              content: 'Get Selected Collections',
                               onAction: handleImportedAction,
                             },
                             {
-                              content: 'Get All Collection With Product',
+                              content: 'Get Selected Collections With Products',
                               onAction: handleExportedActions,
                             },
                           ]}
                         />
                       </Link>
                     </Popover>
-                  </IconButton>
-                </Tooltip>}
+                  
+               
               </Box>
             )}
             muiTableHeadCellProps={{

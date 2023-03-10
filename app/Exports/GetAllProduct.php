@@ -22,40 +22,8 @@ class GetAllProduct implements FromCollection, WithHeadings
     public function collection()
     {
 
-        // $query = 'query {
-        //     products(first: 200) {
-        //       edges {
-        //         cursor
-        //         node {
-        //           id
-        //           title
-        //           descriptionHtml
-        //           vendor
-        //           productType
-        //           handle
-        //           tags
-        //           priceRange {
-        //             maxVariantPrice {
-        //               amount
-        //             }
-        //           }
-        //         }
-        //       }
-        //     }
-        //   }
-        //   ';
-
-        // $body = [
-        //     "query" => $query,
-        // ];
-
         $shop = Session::where('shop', $this->shopurl)->first();
         $products = CommonHelpers::getAllProducts($shop);
-
-        // print_r($products);
-        // exit;
-        
-        
 
         if (!$products) {
             $arrofcsv[] = array(
@@ -108,10 +76,6 @@ class GetAllProduct implements FromCollection, WithHeadings
             );
         }
 
-        // }
-
-        // print_r($product);
-        // exit;
         $productsdata = collect($arrofcsv);
 
         return $productsdata;

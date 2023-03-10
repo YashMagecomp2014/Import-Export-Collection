@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Lib\Handlers;
 
+use App\Models\Charge;
 use App\Models\Collection;
 use Illuminate\Support\Facades\Log;
 use Shopify\Webhooks\Handler;
@@ -17,6 +18,7 @@ class AppUninstalled implements Handler
         Log::debug("App was uninstalled from $shop - removing all sessions");
         Session::where('shop', $shop)->delete();
         Collection::where('shop' , $shop)->delete();
+        Charge::where('shop' , $shop)->delete();
         $store = Storage::deleteDirectory('public/'.$shop);
         
     }

@@ -12,7 +12,7 @@ export const GlobalAPIcall = async (method, url, data = {}, headers = {}) => {
         requestOptions.body = data;
     }
     console.log(requestOptions, "requestOptions");
-    var res = await fetch('https://7e03-103-56-183-203.ngrok.io' + '/api' + url, requestOptions);
+    var res = await fetch('https://collectionie.magecomp.us' + '/api' + url, requestOptions);
     var json = await res.json();
     return json;
 }

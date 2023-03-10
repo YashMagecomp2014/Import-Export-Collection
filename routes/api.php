@@ -48,4 +48,5 @@ Route::get('GetAllProductNotInAnyCollection', [IECollectionController::class, 'G
 
 //Plan
 Route::post('SubscriptionPlan', [PlanController::class, 'PlanCreation'])->name('SubscriptionPlan');
+Route::get('getappstatus', [PlanController::class, 'GetAppStatus'])->name('getappstatus');
 Route::get('getchargeid', [ChargeController::class, 'GetChargeID'])->name('getchargeid');

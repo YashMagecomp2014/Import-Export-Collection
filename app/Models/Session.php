@@ -10,6 +10,30 @@ use Illuminate\Support\Facades\Log;
 class Session extends Model
 {
     use HasFactory;
+    protected $table = 'sessions';
+
+    protected $fillable = [
+        'id',
+        'session_id',
+        'shop',
+        'is_online',
+        'state',
+        'created_at',
+        'updated_at',
+        'scope',
+        'access_token',
+        'expires_at',
+        'user_id',
+        'user_first_name',
+        'user_last_name',
+        'user_email',
+        'user_email_verified',
+        'account_owner',
+        'locale',
+        'collaborator',
+        'plan',
+        'is_free'
+    ];
 
     public function charge()
     {

@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import ReactDOM from 'react-dom';
+import React, { useEffect, useState } from 'react';
+import ReactDOM, { render } from 'react-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import { Fullscreen, Redirect } from "@shopify/app-bridge/actions";
@@ -15,6 +15,7 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 import './app.css';
 import { Provider as ReduxProvider } from 'react-redux';
 import store from './redux/store';
+import { GlobalAPIcall } from './config/ApiUtils';
 
 function userLoggedInFetch(app) {
     const fetchFunction = authenticatedFetch(app);
@@ -59,7 +60,25 @@ function ExamplePage() {
     return <div>Example Page</div>
 }
 function App({ shop, host, apiKey }) {
+
+    const [Plan, setPlan] = useState("");
+    const [Loader, setLoader] = useState(true);
     const config = { apiKey: apiKey, shopOrigin: shop, host: host, forceRedirect: true };
+
+    useEffect(() => {
+        handlePlan()
+    }, []);
+
+    const handlePlan = async () => {
+        setLoader(true)
+        var res = await GlobalAPIcall('GET', '/getappstatus');
+        if (res.data == 0) {
+            setPlan("NO_PLAN");
+        } else {
+            setPlan("PLAN1");
+        }
+        setLoader(false)
+    }
 
 
     return (
@@ -67,12 +86,16 @@ function App({ shop, host, apiKey }) {
             <ReduxProvider store={store}>
                 <Provider config={config}>
                     <BrowserRouter>
-                        <CollectionList />
+                    {
+                        !Loader ?
+                        <CollectionList currentPlan={Plan} /> : <h1>...Loader</h1>
+                    }
                     </BrowserRouter>
                 </Provider>
             </ReduxProvider>
         </AppProvider>
     );
+
 }
 
 export default App;

@@ -21,49 +21,8 @@ class GetAllProductNotInAnyCollection implements FromCollection, WithHeadings
     public function collection()
     {
 
-        // $query = 'query {
-        //   products(first: 100) {
-        //     edges {
-        //       node {
-        //         id
-        //         title
-        //         descriptionHtml
-        //         vendor
-        //         productType
-        //         handle
-        //         tags
-        //         priceRange {
-        //            maxVariantPrice {
-        //               amount
-        //            }
-        //         }
-        //         collections(first: 1) {
-        //           edges {
-        //             node {
-        //               id
-        //             }
-        //           }
-        //         }
-        //       }
-        //     }
-        //   }
-        // }
-        // ';
-
-        // $body = [
-        //     "query" => $query,
-        // ];
-
-       
-        // $response = $shop->graph($body);
-
         $shop = Session::where('shop', $this->shopurl)->first();
         $products = CommonHelpers::getAllProducts($shop, $withCollection = true);
-
-        // $products = $response['data']['products']['edges'];
-
-        // print_r($products);
-        // exit;
 
         foreach ($products as $data) {
 

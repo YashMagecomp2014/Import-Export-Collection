@@ -100,10 +100,10 @@ function Dropdown({ setselectvalue }) {
             <div className="col-lg-8">
               <select className="form-select" id="maindropdownselect" aria-label="Default select example" name="selectvalue" defaultValue={'DEFAULT'} onChange={(e) => setSelect(e.target.value)}>
                 <option value="DEFAULT" disabled>Please Select</option>
-                <option value="export_collection">Get All Collection</option>
-                <option value="export_collection_with_product">Get All Collection With Product</option>
-                <option value="export_All_Product">Get All Product</option>
-                <option value="export_All_Product_Not_Any_Collection">Get All Product Not In Any Collection</option>
+                <option value="export_collection">Get All Collections</option>
+                <option value="export_collection_with_product">Get All Collections With Products</option>
+                <option value="export_All_Product">Get All Products</option>
+                <option value="export_All_Product_Not_Any_Collection">Get All Products Not In Any Collections</option>
               </select>
             </div>
             <div className="col-md-2"></div>

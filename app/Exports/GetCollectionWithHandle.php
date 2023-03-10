@@ -53,6 +53,9 @@ class GetCollectionWithHandle implements FromCollection, WithHeadings
 
             $products = $data['products']['edges'];
 
+
+            
+
             $sort_order = $data['sortOrder'];
             
             $sororder = self::Sortorder($sort_order);
@@ -76,6 +79,27 @@ class GetCollectionWithHandle implements FromCollection, WithHeadings
                     $rule .= $value['column'] . ' ' . $value['relation'] . ' ' . $value['condition'] . ',';
 
                 }
+            }
+
+            if (!$products) {
+                $array = array(
+                    "title" => $data['title'],
+                    'Body (HTML)' => $data['descriptionHtml'],
+                    'Rules' => '',
+                    "products" => '',
+                    'Disjunctive' => '',
+                    'Sort Order' => $data['sortOrder'],
+                    'Template Suffix' => '',
+                    'Published' => 'true',
+                    'SEO Title' => $data['seo']['title'],
+                    'SEO Description' => $data['seo']['description'],
+
+                );
+                if (isset($data['image']['src']) && $data['image']['src']) {
+                    $array['image'] = $data['image']['src'];
+                }
+                $arrofcsv[] = $array;
+
             }
 
             foreach ($products as $key => $product) {

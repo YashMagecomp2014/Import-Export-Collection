@@ -14,13 +14,19 @@ import { Fullscreen } from "@shopify/app-bridge/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { setRedirectIndex } from "../redux/rootReducer";
 import { Toast, Frame } from '@shopify/polaris';
+import { Button, Popover, ActionList } from '@shopify/polaris';
 
-function CollectionList() {
+function CollectionList({ currentPlan }) {//"NO_PLAN"|"FREE"|"PLAN1"|"PLAN2"
   const redirectIndex = useSelector((state) => state.redirectHistory);
   const [collections, setUsers] = useState([]);
   const [selected, setSelected] = useState(0);
   const [toastactive, setToastActive] = useState(false);
   const [inputfield, setInputField] = useState(true);
+  const [option, setOption] = useState('all');
+  const [active, setActive] = useState(false);
+
+  console.log(currentPlan, "CollectionList1")
+  const toggleActive = useCallback(() => setActive((active) => !active), []);
   const dispatch = useDispatch();
 
   const fetchData = async () => {
@@ -28,56 +34,92 @@ function CollectionList() {
     setUsers(res)
 
   }
-  const handleTabChange = useCallback(
-    (selectedTabIndex) => setSelected(selectedTabIndex),
-    [],
+
+  const handleAllAction = (key) => {
+    setOption(key);
+  }
+
+  const activator = (
+    <a onClick={toggleActive}>
+      Collections
+    </a>
   );
+  const handleTabChange = useCallback((selectedTabIndex) => {
+    
+
+    if (currentPlan == "NO_PLAN") {
+      setSelected(2);
+      // alert(2);
+    } else {
+      setSelected(selectedTabIndex);
+    }
+  }, []);
 
   const app = useAppBridge();
   const fullscreen = Fullscreen.create(app);
   // Call the `ENTER` action to put the app in full-screen mode
   useEffect(() => {
-    if (redirectIndex) {
-      setSelected(3);
-      dispatch(setRedirectIndex(false));
+    console.log(currentPlan, "CollectionList2")
+    if (currentPlan == "NO_PLAN") {
+      setSelected(2);
+    } else {
+      if (redirectIndex) {
+        setSelected(1);
+        dispatch(setRedirectIndex(false));
+      }
     }
-    console.log("redirectIndex", redirectIndex);
   }, [redirectIndex]);
-
   const setselectvalue = () => {
-    setSelected(3);
+    setSelected(1);
   }
 
 
   const component = [
-    <GetAllcollection setselectvalue={setselectvalue} />,
-    <GetManualcollection setselectvalue={setselectvalue} />,
-    <GetAutocollection setselectvalue={setselectvalue} />,
+    <GetAllcollection setselectvalue={setselectvalue} options={option} />,
     <HistoryList />,
     <PlanComponent />
-  ]
+  ];
+
+  useEffect(() => {
+    component;
+  }, [option])
 
   const tabs = [
     {
       id: 'all-customers-1',
-      content: 'All',
-      accessibilityLabel: 'All customers',
+      content:
+        <div>
+          <Popover
+            active={active}
+            activator={activator}
+            autofocusTarget="first-node"
+            onClose={toggleActive}
+          >
+            <ActionList
+              actionRole="menuitem"
+              items={[
+                {
+                  content: 'All',
+                  onAction: () => handleAllAction('all'),
+                  disabled: currentPlan == "NO_PLAN" ? true : false
+                },
+                {
+                  content: 'Manually Assigned Products',
+                  onAction: () => handleAllAction('manual'),
+                  disabled: currentPlan == "NO_PLAN" ? true : false
+                },
+                {
+                  content: 'Products Assigned by Rules',
+                  onAction: () => handleAllAction('automatic'),
+                  disabled: currentPlan == "NO_PLAN" ? true : false
+                },
+              ]}
+            />
+          </Popover>
+        </div>,
+      accessibilityLabel: 'All Collection',
       panelID: 'all-customers-content-1',
       to: "/all",
-    },
-    {
-      id: 'accepts-marketing-1',
-      content: 'Manual',
-      panelID: 'accepts-marketing-content-1',
-      to: "/manual",
-      accessibilityLabel: "maunual",
-    },
-    {
-      id: 'repeat-customers-1',
-      content: 'Automatic',
-      panelID: 'repeat-customers-content-1',
-      to: "/automatic",
-      accessibilityLabel: "Automatic",
     },
     {
       id: 'prospects-1',
@@ -96,11 +138,9 @@ function CollectionList() {
 
   useEffect(() => {
     fetchData();
-    console.log(selected);
-    
-    if(selected == 4){
+    if (selected == 2) {
       setInputField(false);
-    }else{
+    } else {
       setInputField(true);
     }
   }, [selected])
@@ -112,19 +152,19 @@ function CollectionList() {
         <div className="row" id='row2'>
           <Card>
             <Tabs tabs={tabs} selected={selected} onSelect={handleTabChange}>
-            {inputfield && <div className="row">
+              {inputfield && <div className="row">
                 <div className="col-md-12" id="HeadingAction">
                   <h1 id="collection">Collections</h1>
                   <div className="selectaction">
                   </div>
                 </div>
-              </div> }
+              </div>}
               <div className="row">
-                {inputfield ? <div className="col-md-8"> 
+                {inputfield ? <div className="col-md-8">
                   <Card.Section >
                     {component[selected]}
                   </Card.Section>
-                </div> : <div className="col-md-12"> 
+                </div> : <div className="col-md-12">
                   <Card.Section >
                     {component[selected]}
                   </Card.Section>
